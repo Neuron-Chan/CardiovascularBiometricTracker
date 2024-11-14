@@ -1,0 +1,29 @@
+<resources>
+    <!-- Primary Colors -->
+    <color name="colorPrimary">#6200EE</color> <!-- Purple -->
+    <color name="colorPrimaryVariant">#3700B3</color> <!-- Darker Purple -->
+    <color name="colorOnPrimary">#FFFFFF</color> <!-- White (for text/icons on primary color) -->
+
+    <!-- Secondary Colors -->
+    <color name="colorSecondary">#03DAC5</color> <!-- Teal -->
+    <color name="colorSecondaryVariant">#018786</color> <!-- Darker Teal -->
+    <color name="colorOnSecondary">#000000</color> <!-- Black (for text/icons on secondary color) -->
+
+    <!-- Background and Surface Colors -->
+    <color name="colorBackground">#FFFFFF</color> <!-- White -->
+    <color name="colorSurface">#FFFFFF</color> <!-- White -->
+    <color name="colorOnBackground">#000000</color> <!-- Black (for text/icons on background) -->
+    <color name="colorOnSurface">#000000</color> <!-- Black (for text/icons on surface) -->
+
+    <!-- Error Color -->
+    <color name="colorError">#B00020</color> <!-- Red for errors -->
+    <color name="colorOnError">#FFFFFF</color> <!-- White (for text/icons on error color) -->
+
+    <!-- Text and Icon Colors -->
+    <color name="colorTextPrimary">#212121</color> <!-- Dark Grey for primary text -->
+    <color name="colorTextSecondary">#757575</color> <!-- Light Grey for secondary text -->
+    <color name="colorIcon">#212121</color> <!-- Dark Grey for icons -->
+
+    <!-- Status Bar Color (optional) -->
+    <color name="colorStatusBar">#6200EE</color> <!-- Purple for status bar -->
+</resources>
