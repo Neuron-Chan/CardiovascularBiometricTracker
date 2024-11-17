@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#FFFFFF"
+    tools:context=".ECG">
+
+    <!-- Page Title -->
+    <TextView
+        android:id="@+id/title_ecg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ECG Monitoring"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Current ECG Status -->
+    <TextView
+        android:id="@+id/ecg_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Normal Rhythm"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#4CAF50"
+        app:layout_constraintTop_toBottomOf="@id/title_ecg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="24dp" />
+
+    <!-- ECG Graph Placeholder -->
+    <View
+        android:id="@+id/ecg_graph"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:background="#E0E0E0"
+        android:contentDescription="ECG Graph Placeholder"
+        app:layout_constraintTop_toBottomOf="@id/ecg_status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Statistics Section -->
+    <LinearLayout
+        android:id="@+id/ecg_stats_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="#F5F5F5"
+        app:layout_constraintTop_toBottomOf="@id/ecg_graph"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="24dp">
+
+        <!-- Average Heart Rate -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/avg_heart_rate_label_ecg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Avg HR"
+                android:textSize="14sp"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/avg_heart_rate_value_ecg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="75 bpm"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+        <!-- QRS Interval -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/qrs_interval_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QRS Interval"
+                android:textSize="14sp"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/qrs_interval_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="90 ms"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+        <!-- PR Interval -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/pr_interval_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PR Interval"
+                android:textSize="14sp"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/pr_interval_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="160 ms"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
