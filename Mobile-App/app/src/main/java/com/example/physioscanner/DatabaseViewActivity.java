@@ -22,7 +22,7 @@ import java.util.List;
 
 public class DatabaseViewActivity extends AppCompatActivity {
 
-    private static final String API_URL = "http://10.100.242.12:8080/api/ecg_data"; // Flask API URL
+    private static final String API_URL = "http://192.168.2.96:8080/api/ecg_data"; // Flask API URL
     private static final String TAG = "DatabaseViewActivity";
     private RecyclerView recyclerView;
     private DatabaseAdapter adapter;

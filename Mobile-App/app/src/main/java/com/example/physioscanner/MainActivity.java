@@ -24,11 +24,13 @@ import okhttp3.WebSocketListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String WEBSOCKET_URL = "ws://10.100.242.12:5000"; // Raspberry Pi WebSocket URL
+    private static final String WEBSOCKET_URL = "ws://192.168.2.96:5000"; // Raspberry Pi WebSocket URL
+    private static final String TAG = "MainActivity";
+
     private LineChart ecgChart;
     private LineDataSet dataSet;
     private LineData ecgData;
-    private TextView timestampText, voltageText;
+    private TextView timestampText, rawVoltageText, filteredVoltageText;
 
     private OkHttpClient client;
     private WebSocket webSocket;
@@ -40,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
         ecgChart = findViewById(R.id.ecg_chart);
         timestampText = findViewById(R.id.timestamp_text);
-        voltageText = findViewById(R.id.voltage_text);
+        rawVoltageText = findViewById(R.id.raw_voltage_text);
+        filteredVoltageText = findViewById(R.id.filtered_voltage_text);
 
         Button viewDatabaseButton = findViewById(R.id.view_database_button);
         viewDatabaseButton.setOnClickListener(v -> {
@@ -61,19 +64,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Reconnect WebSocket when returning to MainActivity
-        connectWebSocket();
+        connectWebSocket(); // Reconnect WebSocket on resume
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Close WebSocket communication when leaving MainActivity
-        closeWebSocket();
+        closeWebSocket(); // Close WebSocket on pause
     }
 
     private void setupChart() {
-        dataSet = new LineDataSet(null, "ECG Data");
+        dataSet = new LineDataSet(null, "Filtered ECG Data");
         dataSet.setLineWidth(2f);
         dataSet.setDrawCircles(false);
         dataSet.setDrawValues(false);
@@ -88,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
         xAxis.setAxisMinimum(0);
 
         YAxis leftAxis = ecgChart.getAxisLeft();
-        leftAxis.setAxisMinimum(-5f);
-        leftAxis.setAxisMaximum(5f);
+        leftAxis.setAxisMinimum(-0.5f);
+        leftAxis.setAxisMaximum(1.5f);
 
         ecgChart.getAxisRight().setEnabled(false);
         ecgChart.getDescription().setEnabled(false);
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, okhttp3.Response response) {
-                Log.d("WebSocket", "Connection opened");
+                Log.d(TAG, "WebSocket connection opened");
             }
 
             @Override
@@ -113,24 +114,24 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, okhttp3.Response response) {
-                Log.e("WebSocket", "Connection failed", t);
+                Log.e(TAG, "WebSocket connection failed", t);
             }
 
             @Override
             public void onClosing(WebSocket webSocket, int code, String reason) {
-                Log.d("WebSocket", "Connection closing: " + reason);
+                Log.d(TAG, "WebSocket connection closing: " + reason);
             }
 
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
-                Log.d("WebSocket", "Connection closed: " + reason);
+                Log.d(TAG, "WebSocket connection closed: " + reason);
             }
         });
     }
 
     private void closeWebSocket() {
         if (webSocket != null) {
-            webSocket.close(1000, null); // Gracefully close the WebSocket connection
+            webSocket.close(1000, null);
         }
         if (client != null) {
             client.dispatcher().executorService().shutdown(); // Shut down OkHttp client
@@ -141,14 +142,18 @@ public class MainActivity extends AppCompatActivity {
         try {
             JSONObject jsonObject = new JSONObject(text);
             String timestamp = jsonObject.getString("timestamp");
-            double voltage = jsonObject.getDouble("voltage");
+            double rawVoltage = jsonObject.getDouble("raw_voltage");
+            double filteredVoltage = jsonObject.getDouble("filtered_voltage");
 
+            // Update UI with received data
             timestampText.setText("Timestamp: " + timestamp);
-            voltageText.setText("Voltage: " + voltage + "V");
+            rawVoltageText.setText("Raw Voltage: " + rawVoltage + " V");
+            filteredVoltageText.setText("Filtered Voltage: " + filteredVoltage + " V");
 
-            addEntryToGraph((float) voltage);
+            // Add filtered voltage to the graph
+            addEntryToGraph((float) filteredVoltage);
         } catch (Exception e) {
-            Log.e("WebSocket", "Error parsing data", e);
+            Log.e(TAG, "Error parsing WebSocket data", e);
         }
     }
 
