@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -9,7 +10,7 @@
 
     <!-- Toolbar displaying the title of the screen -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarHomePage"
+        android:id="@+id/toolbarPPG"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#4F6367"
@@ -18,27 +19,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="ECG Signal"
+        app:title="PPG Signal"
         app:titleTextColor="#FFFFFF" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="376dp"
+        android:layout_height="641dp"
         android:background="#B8CCD0"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarHomePage">
+        app:layout_constraintTop_toBottomOf="@+id/toolbarPPG">
 
+        <!-- PPG Chart for live waveform -->
         <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/ecg_chart"
+            android:id="@+id/ppg_chart"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_marginBottom="16dp" />
 
-        <!-- Display Timestamp -->
+        <!-- Timestamp Display -->
         <TextView
             android:id="@+id/timestamp_text"
             android:layout_width="wrap_content"
@@ -48,38 +50,28 @@
             android:textColor="#000000"
             android:textSize="16sp" />
 
-        <!-- Display Raw Voltage -->
+        <!-- PPG Value Display -->
         <TextView
-            android:id="@+id/raw_voltage_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="Raw Voltage:"
-            android:textColor="#000000"
-            android:textSize="16sp" />
-
-        <!-- Display Filtered Voltage -->
-        <TextView
-            android:id="@+id/filtered_voltage_text"
+            android:id="@+id/ppg_value_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="Filtered Voltage:"
+            android:text="PPG Value:"
             android:textColor="#000000"
             android:textSize="16sp" />
 
-        <!-- Button to View Database -->
+        <!-- Button to navigate to the database (if needed for storing PPG readings) -->
         <Button
             android:id="@+id/view_database_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:backgroundTint="#0D3B64"
-            android:text="View ECG Database"
+            android:text="View PPG Database"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 
-    <!-- Home Button -->
+    <!-- Home Button to return to Main Menu -->
     <Button
         android:id="@+id/home_button"
         android:layout_width="119dp"
@@ -87,10 +79,11 @@
         android:text="Home"
         android:backgroundTint="#B8CCD0"
         android:textColor="#000000"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbarHomePage"
-        app:layout_constraintEnd_toEndOf="@+id/toolbarHomePage"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbarPPG"
+        app:layout_constraintEnd_toEndOf="@+id/toolbarPPG"
         app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/toolbarHomePage"
+        app:layout_constraintTop_toTopOf="@+id/toolbarPPG"
         app:layout_constraintVertical_bias="1.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

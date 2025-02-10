@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,7 +10,7 @@
     <!-- Main Title -->
     <TextView
         android:id="@+id/main_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Cardiovascular Biometric Tracker"
         android:textSize="22sp"
@@ -34,21 +33,21 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/card_temperature"
+        app:cardBackgroundColor="@color/card_color"
+        app:layout_constraintTop_toBottomOf="@id/main_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:cardBackgroundColor="@color/card_color">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="16dp">
 
             <TextView
                 android:id="@+id/ecg_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ECG Signal"
+                android:text="ECG"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#333333"
@@ -70,6 +69,54 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- PPG Signal Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_ppg"
+        android:layout_width="0dp"
+        android:layout_height="140dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/card_color"
+        app:layout_constraintTop_toBottomOf="@id/card_ecg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/ppg_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PPG"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ppg_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stable"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FF9800"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
     <!-- Heart Rate Card -->
     <androidx.cardview.widget.CardView
         android:id="@+id/card_heart_rate"
@@ -82,14 +129,14 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/main_title"
+        app:layout_constraintTop_toBottomOf="@id/card_ppg"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:cardBackgroundColor="@color/card_color">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="16dp">
 
             <TextView
@@ -137,7 +184,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="16dp">
 
             <TextView
@@ -159,55 +206,6 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#4CAF50"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-
-
-    <!-- PPG Signal Card -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_ppg"
-        android:layout_width="0dp"
-        android:layout_height="140dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="6dp"
-        app:cardUseCompatPadding="true"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/card_ecg"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:cardBackgroundColor="@color/card_color">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/ppg_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PPG Signal"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/ppg_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stable"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#FF9800"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />

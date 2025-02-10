@@ -45,6 +45,13 @@
             android:name=".DatabaseViewActivity"
             android:exported="true" />
 
+        <!-- PPG Activity -->
+        <activity
+            android:name=".PPGActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PhysioScanner" />
+
+
     </application>
 
 </manifest>

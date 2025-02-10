@@ -1,121 +1,183 @@
-import time
+#!/usr/bin/env python3
+import serial
 import sqlite3
+from datetime import datetime
 import threading
-import numpy as np
-from ads1015 import ADS1015
-import RPi.GPIO as GPIO
+from flask import Flask, jsonify
+from flask_socketio import SocketIO
 
-# GPIO Setup for Buzzer
-BUZZER_PIN = 18
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUZZER_PIN, GPIO.OUT)
-GPIO.output(BUZZER_PIN, GPIO.LOW)
+DB_FILE = 'sensor_data.db'
 
-# Initialize ADC
-ads = ADS1015()
-ads.set_mode_continuous()
-ads.set_data_rate(3300)
+# Sampling counters
+ecg_count = 0
+ppg_count = 0
+temp_count = 0
 
-# Database Setup
-conn = sqlite3.connect("ecg_data.db", check_same_thread=False)
-cursor = conn.cursor()
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS ecg_data (
-        timestamp TEXT,
-        raw_voltage REAL,
-        filtered_voltage REAL
-    )
-""")
-conn.commit()
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Global Variables
-BUFFER_SIZE = 1000
-SAMPLE_RATE = 490  # Hz
-BUZZER_THRESHOLD = 0.3  # Adjusted threshold
-raw_data = []
-filtered_data = []
-buffer_lock = threading.Lock()
-
-# Bandpass Filter Configuration
-def bandpass_filter(data, lowcut, highcut, fs, order=2):
-    from scipy.signal import butter, lfilter
-    nyquist = 0.5 * fs
-    low = lowcut / nyquist
-    high = highcut / nyquist
-    b, a = butter(order, [low, high], btype="band")
-    return lfilter(b, a, data)
-
-# Read Data from ADC
-def read_adc():
-    global raw_data
-    while True:
-        start_time = time.time()
-        raw_voltage = ads.read_voltage(channel=0)
-        with buffer_lock:
-            raw_data.append(raw_voltage)
-            if len(raw_data) > BUFFER_SIZE:
-                raw_data.pop(0)
-        time.sleep(max(0, (1 / SAMPLE_RATE) - (time.time() - start_time)))
-
-# Filter Data
-def filter_data():
-    global raw_data, filtered_data
-    while True:
-        with buffer_lock:
-            if len(raw_data) >= BUFFER_SIZE:
-                data_to_filter = np.array(raw_data[-BUFFER_SIZE:])
-                filtered = bandpass_filter(data_to_filter, 0.5, 40, SAMPLE_RATE)
-                filtered_data.extend(filtered.tolist())
-                if len(filtered_data) > BUFFER_SIZE:
-                    filtered_data = filtered_data[-BUFFER_SIZE:]
-
-# Monitor Buzzer
-buzzer_active = False
-def monitor_buzzer():
-    global filtered_data, buzzer_active
-    while True:
-        if filtered_data:
-            latest_value = filtered_data[-1]
-            if latest_value < BUZZER_THRESHOLD:
-                if not buzzer_active:
-                    GPIO.output(BUZZER_PIN, GPIO.HIGH)
-                    buzzer_active = True
-            else:
-                if buzzer_active:
-                    GPIO.output(BUZZER_PIN, GPIO.LOW)
-                    buzzer_active = False
-        time.sleep(0.1)
-
-# Save Data to Database
-def save_to_db():
-    global raw_data, filtered_data
-    while True:
-        if len(raw_data) >= BUFFER_SIZE and len(filtered_data) >= BUFFER_SIZE:
-            with buffer_lock:
-                raw_to_save = raw_data[-BUFFER_SIZE:]
-                filtered_to_save = filtered_data[-BUFFER_SIZE:]
-                timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-                data = [(timestamp, raw, filt) for raw, filt in zip(raw_to_save, filtered_to_save)]
-                cursor.executemany("INSERT INTO ecg_data (timestamp, raw_voltage, filtered_voltage) VALUES (?, ?, ?)", data)
-                conn.commit()
-        time.sleep(10)
-
-# Start Threads
-adc_thread = threading.Thread(target=read_adc, daemon=True)
-filter_thread = threading.Thread(target=filter_data, daemon=True)
-buzzer_thread = threading.Thread(target=monitor_buzzer, daemon=True)
-db_thread = threading.Thread(target=save_to_db, daemon=True)
-
-adc_thread.start()
-filter_thread.start()
-buzzer_thread.start()
-db_thread.start()
-
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Shutting down...")
-    GPIO.output(BUZZER_PIN, GPIO.LOW)
-    GPIO.cleanup()
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("PRAGMA journal_mode=WAL")
+    # ECG table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS ecg_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            rpi_timestamp TEXT NOT NULL,
+            arduino_timestamp INTEGER NOT NULL,
+            ecg_value REAL NOT NULL
+        )
+    ''')
+    # PPG table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS ppg_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            rpi_timestamp TEXT NOT NULL,
+            arduino_timestamp INTEGER NOT NULL,
+            heart_rate INTEGER,
+            confidence INTEGER,
+            oxygen INTEGER,
+            status INTEGER
+        )
+    ''')
+    # Temperature table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS temperature_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            rpi_timestamp TEXT NOT NULL,
+            arduino_timestamp INTEGER NOT NULL,
+            temperature_c REAL NOT NULL,
+            temperature_f REAL NOT NULL
+        )
+    ''')
+    conn.commit()
     conn.close()
+
+def process_line(line, conn):
+    global ecg_count, ppg_count, temp_count
+    line = line.strip()
+    rpi_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    c = conn.cursor()
+
+    if line.startswith("ECG,"):
+        parts = line.split(",")
+        if len(parts) >= 3:
+            try:
+                arduino_ts = int(parts[1])
+                try:
+                    raw_val = int(parts[2])
+                except Exception:
+                    return
+                voltage = raw_val * 5.0 / 1023.0
+                c.execute(
+                    "INSERT INTO ecg_data (rpi_timestamp, arduino_timestamp, ecg_value) VALUES (?, ?, ?)",
+                    (rpi_timestamp, arduino_ts, voltage)
+                )
+                ecg_count += 1
+                socketio.emit("ecg_data", {"timestamp": rpi_timestamp, "voltage": voltage})
+                if ecg_count % 10 == 0:
+                    conn.commit()
+            except Exception as e:
+                print("Error processing ECG data:", e)
+    elif line.startswith("PPG,"):
+        parts = line.split(",")
+        if len(parts) >= 6:
+            try:
+                arduino_ts = int(parts[1])
+                heart_rate = int(parts[2])
+                confidence = int(parts[3])
+                oxygen = int(parts[4])
+                status = int(parts[5])
+                c.execute(
+                    "INSERT INTO ppg_data (rpi_timestamp, arduino_timestamp, heart_rate, confidence, oxygen, status)>
+                    (rpi_timestamp, arduino_ts, heart_rate, confidence, oxygen, status)
+                )
+                ppg_count += 1
+                socketio.emit("ppg_data", {"timestamp": rpi_timestamp, "ppg": heart_rate})
+                if ppg_count % 5 == 0:
+                    conn.commit()
+            except Exception as e:
+                print("Error processing PPG data:", e)
+    elif line.startswith("TEMP,"):
+        parts = line.split(",")
+        if len(parts) >= 3:
+            try:
+                arduino_ts = int(parts[1])
+                temperature_c = float(parts[2])
+                temperature_f = temperature_c * 9/5 + 32
+                c.execute(
+                    "INSERT INTO temperature_data (rpi_timestamp, arduino_timestamp, temperature_c, temperature_f) V>
+                    (rpi_timestamp, arduino_ts, temperature_c, temperature_f)
+                )
+                temp_count += 1
+                socketio.emit("temp_data", {"timestamp": rpi_timestamp, "temperature_c": temperature_c, "temperature>
+                conn.commit()
+            except Exception as e:
+                print("Error processing TEMP data:", e)
+
+def print_sampling_rates(start_time):
+    global ecg_count, ppg_count, temp_count
+    elapsed_time = (datetime.now() - start_time).total_seconds()
+    if elapsed_time >= 1:
+        print(f"Effective sampling rate (last 1 sec): ECG: {ecg_count} Hz, PPG: {ppg_count} Hz, TEMP: {temp_count} H>
+        ecg_count = 0
+        ppg_count = 0
+        temp_count = 0
+        return datetime.now()
+    return start_time
+
+def read_serial():
+    conn = sqlite3.connect(DB_FILE, check_same_thread=False)
+    try:
+        ser = serial.Serial('/dev/ttyACM0', 115200, timeout=0.01)
+        print("Listening on serial port /dev/ttyACM0...")
+    except Exception as e:
+        print("Error opening serial port:", e)
+        return
+    start_time = datetime.now()
+    while True:
+        try:
+            line = ser.readline().decode('utf-8')
+            if line:
+                process_line(line, conn)
+            start_time = print_sampling_rates(start_time)
+        except Exception as e:
+            print("Error reading serial data:", e)
+
+@app.route('/api/ecg_data', methods=['GET'])
+def get_ecg_data():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT rpi_timestamp, ecg_value FROM ecg_data ORDER BY id ASC")
+    rows = c.fetchall()
+    data = []
+    for row in rows:
+        data.append({"timestamp": row["rpi_timestamp"], "voltage": row["ecg_value"]})
+    conn.close()
+    return jsonify(data)
+
+@app.route('/api/ppg_data', methods=['GET'])
+def get_ppg_data():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    # For simplicity, we return only the heart rate for PPG data.
+    c.execute("SELECT rpi_timestamp, heart_rate FROM ppg_data ORDER BY id ASC")
+    rows = c.fetchall()
+    data = []
+    for row in rows:
+        data.append({"timestamp": row["rpi_timestamp"], "ppg": row["heart_rate"]})
+    conn.close()
+    return jsonify(data)
+
+if __name__ == "__main__":
+    init_db()
+    serial_thread = threading.Thread(target=read_serial)
+    serial_thread.daemon = True
+    serial_thread.start()
+    socketio.run(app, host="0.0.0.0", port=5000)
+
+
