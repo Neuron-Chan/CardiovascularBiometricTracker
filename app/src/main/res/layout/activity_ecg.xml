@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:background="#FFFFFF"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Toolbar displaying the title of the screen -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarHomePage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#4F6367"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="ECG Signal"
+        app:titleTextColor="#FFFFFF" />
+
+    <LinearLayout
+        android:layout_width="376dp"
+        android:layout_height="641dp"
+        android:background="#B8CCD0"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarHomePage">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/ecg_chart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/timestamp_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Timestamp:"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/voltage_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Voltage:"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/view_database_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="#0D3B64"
+            android:text="View ECG Database"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/home_button"
+        android:layout_width="119dp"
+        android:layout_height="64dp"
+        android:text="Home"
+        android:backgroundTint="#B8CCD0"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbarHomePage"
+        app:layout_constraintEnd_toEndOf="@+id/toolbarHomePage"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/toolbarHomePage"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
