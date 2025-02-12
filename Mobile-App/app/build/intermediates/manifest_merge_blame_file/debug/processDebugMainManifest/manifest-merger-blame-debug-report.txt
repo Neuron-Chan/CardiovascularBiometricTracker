@@ -1,0 +1,142 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.physioscanner"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Permissions required for network access -->
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:6:5-67
+12-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:6:22-64
+13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+13-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:7:5-79
+13-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:7:22-76
+14    <uses-permission android:name="android.permission.WAKE_LOCK" />
+14-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:8:5-68
+14-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:8:22-65
+15
+16    <!-- Optional permissions if you plan to use Wi-Fi settings -->
+17    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+17-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:11:5-76
+17-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:11:22-73
+18    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+18-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:12:5-76
+18-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:12:22-73
+19
+20    <permission
+20-->[androidx.core:core:1.9.0] C:\Users\Sam\.gradle\caches\8.9\transforms\d594f0e24e813893fcd8af87e2a61273\transformed\core-1.9.0\AndroidManifest.xml:22:5-24:47
+21        android:name="com.example.physioscanner.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+21-->[androidx.core:core:1.9.0] C:\Users\Sam\.gradle\caches\8.9\transforms\d594f0e24e813893fcd8af87e2a61273\transformed\core-1.9.0\AndroidManifest.xml:23:9-81
+22        android:protectionLevel="signature" />
+22-->[androidx.core:core:1.9.0] C:\Users\Sam\.gradle\caches\8.9\transforms\d594f0e24e813893fcd8af87e2a61273\transformed\core-1.9.0\AndroidManifest.xml:24:9-44
+23
+24    <uses-permission android:name="com.example.physioscanner.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+24-->[androidx.core:core:1.9.0] C:\Users\Sam\.gradle\caches\8.9\transforms\d594f0e24e813893fcd8af87e2a61273\transformed\core-1.9.0\AndroidManifest.xml:26:5-97
+24-->[androidx.core:core:1.9.0] C:\Users\Sam\.gradle\caches\8.9\transforms\d594f0e24e813893fcd8af87e2a61273\transformed\core-1.9.0\AndroidManifest.xml:26:22-94
+25
+26    <application
+26-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:14:5-48:19
+27        android:allowBackup="true"
+27-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:15:9-35
+28        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+28-->[androidx.core:core:1.9.0] C:\Users\Sam\.gradle\caches\8.9\transforms\d594f0e24e813893fcd8af87e2a61273\transformed\core-1.9.0\AndroidManifest.xml:28:18-86
+29        android:dataExtractionRules="@xml/data_extraction_rules"
+29-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:16:9-65
+30        android:debuggable="true"
+31        android:extractNativeLibs="false"
+32        android:fullBackupContent="@xml/backup_rules"
+32-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:17:9-54
+33        android:icon="@mipmap/ic_launcher"
+33-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:18:9-43
+34        android:label="@string/app_name"
+34-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:19:9-41
+35        android:networkSecurityConfig="@xml/network_security_config"
+35-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:23:9-69
+36        android:roundIcon="@mipmap/ic_launcher_round"
+36-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:20:9-54
+37        android:supportsRtl="true"
+37-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:21:9-35
+38        android:testOnly="true"
+39        android:theme="@style/Theme.PhysioScanner" >
+39-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:22:9-51
+40
+41        <!-- Set MainMenu as the launcher activity -->
+42        <activity
+42-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:27:9-35:20
+43            android:name="com.example.physioscanner.MainMenu"
+43-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:28:13-37
+44            android:exported="true"
+44-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:29:13-36
+45            android:theme="@style/Theme.PhysioScanner" >
+45-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:30:13-55
+46            <intent-filter>
+46-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:31:13-34:29
+47                <action android:name="android.intent.action.MAIN" />
+47-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:32:17-69
+47-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:32:25-66
+48
+49                <category android:name="android.intent.category.LAUNCHER" />
+49-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:33:17-77
+49-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:33:27-74
+50            </intent-filter>
+51        </activity>
+52
+53        <!-- Main Activity (No intent-filter for launcher) -->
+54        <activity
+54-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:38:9-41:58
+55            android:name="com.example.physioscanner.MainActivity"
+55-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:39:13-41
+56            android:exported="true"
+56-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:40:13-36
+57            android:theme="@style/Theme.PhysioScanner" />
+57-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:41:13-55
+58
+59        <!-- Database View Activity -->
+60        <activity
+60-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:44:9-46:39
+61            android:name="com.example.physioscanner.DatabaseViewActivity"
+61-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:45:13-49
+62            android:exported="true" />
+62-->C:\Users\Sam\Downloads\Phys\app\src\main\AndroidManifest.xml:46:13-36
+63
+64        <uses-library
+64-->[androidx.window:window:1.0.0] C:\Users\Sam\.gradle\caches\8.9\transforms\a9d1d18c28006db80ffbb7c1713392cc\transformed\window-1.0.0\AndroidManifest.xml:25:9-27:40
+65            android:name="androidx.window.extensions"
+65-->[androidx.window:window:1.0.0] C:\Users\Sam\.gradle\caches\8.9\transforms\a9d1d18c28006db80ffbb7c1713392cc\transformed\window-1.0.0\AndroidManifest.xml:26:13-54
+66            android:required="false" />
+66-->[androidx.window:window:1.0.0] C:\Users\Sam\.gradle\caches\8.9\transforms\a9d1d18c28006db80ffbb7c1713392cc\transformed\window-1.0.0\AndroidManifest.xml:27:13-37
+67        <uses-library
+67-->[androidx.window:window:1.0.0] C:\Users\Sam\.gradle\caches\8.9\transforms\a9d1d18c28006db80ffbb7c1713392cc\transformed\window-1.0.0\AndroidManifest.xml:28:9-30:40
+68            android:name="androidx.window.sidecar"
+68-->[androidx.window:window:1.0.0] C:\Users\Sam\.gradle\caches\8.9\transforms\a9d1d18c28006db80ffbb7c1713392cc\transformed\window-1.0.0\AndroidManifest.xml:29:13-51
+69            android:required="false" />
+69-->[androidx.window:window:1.0.0] C:\Users\Sam\.gradle\caches\8.9\transforms\a9d1d18c28006db80ffbb7c1713392cc\transformed\window-1.0.0\AndroidManifest.xml:30:13-37
+70
+71        <provider
+71-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Sam\.gradle\caches\8.9\transforms\f4a5cc533975f46f60c9a440d2c15d17\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+72            android:name="androidx.startup.InitializationProvider"
+72-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Sam\.gradle\caches\8.9\transforms\f4a5cc533975f46f60c9a440d2c15d17\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
+73            android:authorities="com.example.physioscanner.androidx-startup"
+73-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Sam\.gradle\caches\8.9\transforms\f4a5cc533975f46f60c9a440d2c15d17\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
+74            android:exported="false" >
+74-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Sam\.gradle\caches\8.9\transforms\f4a5cc533975f46f60c9a440d2c15d17\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
+75            <meta-data
+75-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Sam\.gradle\caches\8.9\transforms\f4a5cc533975f46f60c9a440d2c15d17\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+76                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+76-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Sam\.gradle\caches\8.9\transforms\f4a5cc533975f46f60c9a440d2c15d17\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
+77                android:value="androidx.startup" />
+77-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Sam\.gradle\caches\8.9\transforms\f4a5cc533975f46f60c9a440d2c15d17\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
+78            <meta-data
+78-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Sam\.gradle\caches\8.9\transforms\d94ef7719920966045737d5bd2c860db\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+79                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+79-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Sam\.gradle\caches\8.9\transforms\d94ef7719920966045737d5bd2c860db\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+80                android:value="androidx.startup" />
+80-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\Sam\.gradle\caches\8.9\transforms\d94ef7719920966045737d5bd2c860db\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+81        </provider>
+82    </application>
+83
+84</manifest>

@@ -26,13 +26,13 @@ import io.socket.emitter.Emitter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String SOCKET_URL = "http://10.100.242.14:5000"; // Use http:// for Socket.IO
+    private static final String SOCKET_URL = "http://192.168.2.94:5000"; // Use http:// for Socket.IO
     private LineChart lineChart;
     private LineDataSet dataSet;
     private LineData chartData;
     private TextView timestampText, valueText;
     private Socket mSocket;
-    private String dataType = "ecg"; // Default mode is ECG
+    private String dataType = "ecg"; // default mode is ECG
 
     {
         try {
@@ -47,14 +47,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Check for an Intent extra "dataType" (if absent, default to "ecg")
+        // Check for the "dataType" extra; if absent, default to "ecg"
         Intent intent = getIntent();
         if (intent.hasExtra("dataType")) {
             dataType = intent.getStringExtra("dataType");
         }
         Log.d("MainActivity", "Data type: " + dataType);
 
-        // Find UI elements (note: the layout uses the same IDs for the chart and texts)
+        // Find UI elements (the layout uses the same IDs regardless of mode)
         lineChart = findViewById(R.id.ecg_chart);
         timestampText = findViewById(R.id.timestamp_text);
         valueText = findViewById(R.id.voltage_text);
@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         Button viewDatabaseButton = findViewById(R.id.view_database_button);
         viewDatabaseButton.setOnClickListener(v -> {
             mSocket.disconnect();
-            // Pass the current dataType to the database view activity
             Intent dbIntent = new Intent(MainActivity.this, DatabaseViewActivity.class);
             dbIntent.putExtra("dataType", dataType);
             startActivity(dbIntent);
@@ -70,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
         Button homeButton = findViewById(R.id.home_button);
         homeButton.setOnClickListener(v -> {
-            Intent intentHome = new Intent(MainActivity.this, MainMenu.class);
-            startActivity(intentHome);
+            Intent homeIntent = new Intent(MainActivity.this, MainMenu.class);
+            startActivity(homeIntent);
         });
 
         setupChart();
@@ -103,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
         if (dataType.equalsIgnoreCase("ppg")) {
             dataSet = new LineDataSet(new java.util.ArrayList<Entry>(), "PPG Data");
             dataSet.setColor(getResources().getColor(android.R.color.holo_green_dark));
-            // For PPG, we assume heart rate values typically range from 0 to 200
+            dataSet.setDrawValues(false); // Remove point labels
+            dataSet.setDrawCircles(false);
             chartData = new LineData(dataSet);
             lineChart.setData(chartData);
 
@@ -114,16 +114,18 @@ public class MainActivity extends AppCompatActivity {
 
             YAxis leftAxis = lineChart.getAxisLeft();
             leftAxis.setAxisMinimum(0f);
-            leftAxis.setAxisMaximum(200f);
+            leftAxis.setAxisMaximum(200f);  // typical heart rate range
 
             lineChart.getAxisRight().setEnabled(false);
             lineChart.getDescription().setEnabled(false);
             lineChart.setTouchEnabled(false);
             lineChart.invalidate();
         } else {
-            // ECG default
+            // ECG default mode
             dataSet = new LineDataSet(new java.util.ArrayList<Entry>(), "ECG Data");
             dataSet.setColor(getResources().getColor(android.R.color.holo_blue_dark));
+            dataSet.setDrawValues(false); // Remove point labels
+            dataSet.setDrawCircles(false);
             chartData = new LineData(dataSet);
             lineChart.setData(chartData);
 
@@ -152,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
                     String timestamp = data.getString("timestamp");
                     double value;
                     if (dataType.equalsIgnoreCase("ppg")) {
-                        // For PPG mode, the server emits "ppg_data" with a "ppg" key.
                         value = data.getDouble("ppg");
                         timestampText.setText("Timestamp: " + timestamp);
                         valueText.setText("Heart Rate: " + value);
@@ -175,13 +176,12 @@ public class MainActivity extends AppCompatActivity {
         chartData.notifyDataChanged();
         lineChart.notifyDataSetChanged();
         if (dataType.equalsIgnoreCase("ppg")) {
-            // For PPG at ~25 Hz, show, say, 50 points (2 seconds window)
             lineChart.setVisibleXRangeMaximum(50);
         } else {
-            // For ECG at 100 Hz, show 100 points (1 second window)
             lineChart.setVisibleXRangeMaximum(100);
         }
-        lineChart.moveViewToX(dataSet.getEntryCount());
+        // Instantaneously jump to the latest record
+        lineChart.moveViewToX(dataSet.getEntryCount() - 1);
         lineChart.invalidate();
     }
 }

@@ -17,7 +17,7 @@ public class MainMenu extends AppCompatActivity {
     // CardViews for each sensor screen
     CardView cardHeartRate;
     CardView cardECG;
-    CardView card_ppg;  // Renamed variable for clarity (this is our PPG card)
+    CardView card_ppg;      // PPG card
     CardView cardTemperature;
 
     @Override
@@ -34,25 +34,29 @@ public class MainMenu extends AppCompatActivity {
         // Initialize CardViews
         cardHeartRate = findViewById(R.id.card_heart_rate);
         cardECG = findViewById(R.id.card_ecg);
-        card_ppg = findViewById(R.id.card_ppg); // This is our PPG card
+        card_ppg = findViewById(R.id.card_ppg);
         cardTemperature = findViewById(R.id.card_temperature);
 
         // Set click listeners for navigation
 
-        // Launch live ECG view (MainActivity in ECG mode)
+        // Launch live ECG view (MainActivity is for ECG)
         cardECG.setOnClickListener(v -> {
             Intent intent = new Intent(MainMenu.this, MainActivity.class);
             intent.putExtra("dataType", "ecg");
             startActivity(intent);
         });
 
-        // Launch live PPG view (MainActivity in PPG mode)
+        // Launch live PPG view (Use PPGActivity for PPG)
         card_ppg.setOnClickListener(v -> {
-            Intent intent = new Intent(MainMenu.this, MainActivity.class);
-            intent.putExtra("dataType", "ppg");
+            Intent intent = new Intent(MainMenu.this, PPGActivity.class);
+            // No need to pass "dataType" extra if PPGActivity is dedicated to PPG
             startActivity(intent);
         });
 
-        // (Optionally, add listeners for the other cards if needed.)
+        // Launch Temperature view (TemperatureActivity)
+        cardTemperature.setOnClickListener(v -> {
+            Intent intent = new Intent(MainMenu.this, TemperatureActivity.class);
+            startActivity(intent);
+        });
     }
 }

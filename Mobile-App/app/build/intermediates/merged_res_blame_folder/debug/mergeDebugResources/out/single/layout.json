@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-mergeDebugResources-43:\\layout\\activity_database_view.xml",
+        "source": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-main-46:\\layout\\activity_database_view.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-mergeDebugResources-43:\\layout\\item_database_entry.xml",
+        "source": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-main-46:\\layout\\item_database_entry.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-mergeDebugResources-43:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-main-46:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-mergeDebugResources-43:\\layout\\main_menu.xml",
+        "source": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-main-46:\\layout\\main_menu.xml"
+    },
+    {
+        "merged": "com.example.physioscanner.app-mergeDebugResources-43:/layout/activity_main.xml",
+        "source": "com.example.physioscanner.app-main-46:/layout/activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-mergeDebugResources-43:\\layout\\item_ecg_entry.xml",
+        "source": "C:\\Users\\Sam\\.gradle\\daemon\\8.9\\com.example.physioscanner.app-main-46:\\layout\\item_ecg_entry.xml"
+    }
+]

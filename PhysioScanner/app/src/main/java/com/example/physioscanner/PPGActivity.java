@@ -27,7 +27,8 @@ import io.socket.emitter.Emitter;
 
 public class PPGActivity extends AppCompatActivity {
 
-    private static final String SOCKET_URL = "http://10.100.242.14:5000"; // Use http:// for Socket.IO
+    // Use the new IP address
+    private static final String SOCKET_URL = "http://192.168.2.94:5000";
     private static final String TAG = "PPGActivity";
 
     private LineChart ppgChart;
@@ -48,13 +49,18 @@ public class PPGActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Ensure that the PPG activity uses its own layout
         setContentView(R.layout.activity_ppg);
 
+        // Bind UI elements from activity_ppg.xml
         ppgChart = findViewById(R.id.ppg_chart);
         timestampTextView = findViewById(R.id.timestamp_text);
         ppgValueTextView = findViewById(R.id.ppg_value_text);
         homeButton = findViewById(R.id.home_button);
         viewDatabaseButton = findViewById(R.id.view_database_button);
+
+        // Set the button text explicitly to "View PPG Database"
+        viewDatabaseButton.setText("View PPG Database");
 
         setupPPGChart();
 
@@ -63,8 +69,10 @@ public class PPGActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // When the user taps the database button, pass the extra "dataType" = "ppg"
         viewDatabaseButton.setOnClickListener(v -> {
             Intent intent = new Intent(PPGActivity.this, DatabaseViewActivity.class);
+            intent.putExtra("dataType", "ppg");
             startActivity(intent);
         });
     }
@@ -88,6 +96,7 @@ public class PPGActivity extends AppCompatActivity {
         ppgDataSet.setColor(Color.BLUE);
         ppgDataSet.setDrawCircles(false);
         ppgDataSet.setLineWidth(2f);
+        ppgDataSet.setDrawValues(false);  // Remove point labels
 
         ppgLineData = new LineData(ppgDataSet);
         ppgChart.setData(ppgLineData);
@@ -103,6 +112,7 @@ public class PPGActivity extends AppCompatActivity {
             JSONObject data = (JSONObject) args[0];
             runOnUiThread(() -> {
                 try {
+                    // Extract "ppg" data (the server emits heart_rate in the "ppg" key)
                     double ppgValue = data.getDouble("ppg");
                     String timestamp = data.getString("timestamp");
                     timestampTextView.setText("Timestamp: " + timestamp);
@@ -120,9 +130,10 @@ public class PPGActivity extends AppCompatActivity {
         ppgDataSet.addEntry(new Entry(xValue, ppgValue));
         ppgLineData.notifyDataChanged();
         ppgChart.notifyDataSetChanged();
-        // For PPG at 25 Hz, show a visible window of ~100 points (4 seconds)
+        // For 25 Hz, a window of 100 points is about 4 seconds.
         ppgChart.setVisibleXRangeMaximum(100);
-        ppgChart.moveViewToX(ppgDataSet.getEntryCount());
+        // Immediately jump to the latest entry:
+        ppgChart.moveViewToX(ppgDataSet.getEntryCount() - 1);
         ppgChart.invalidate();
     }
 }

@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar displaying the title of the screen -->
+    <!-- Toolbar with correct title -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarPPG"
         android:layout_width="match_parent"
@@ -23,17 +23,15 @@
         app:titleTextColor="#FFFFFF" />
 
     <LinearLayout
-        android:layout_width="376dp"
-        android:layout_height="641dp"
-        android:background="#B8CCD0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarPPG"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarPPG">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- PPG Chart for live waveform -->
+        <!-- PPG Chart -->
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/ppg_chart"
             android:layout_width="match_parent"
@@ -45,22 +43,22 @@
             android:id="@+id/timestamp_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:text="Timestamp:"
             android:textColor="#000000"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
 
         <!-- PPG Value Display -->
         <TextView
             android:id="@+id/ppg_value_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:text="PPG Value:"
             android:textColor="#000000"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp" />
 
-        <!-- Button to navigate to the database (if needed for storing PPG readings) -->
+        <!-- Button to navigate to the PPG database -->
         <Button
             android:id="@+id/view_database_button"
             android:layout_width="wrap_content"
