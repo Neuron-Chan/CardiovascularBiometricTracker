@@ -95,7 +95,12 @@ def process_line(line, conn):
                     (rpi_timestamp, arduino_ts, heart_rate, confidence, oxygen, status)
                 )
                 ppg_count += 1
-                socketio.emit("ppg_data", {"timestamp": rpi_timestamp, "ppg": heart_rate})
+                socketio.emit("ppg_data", {
+                    "timestamp": rpi_timestamp,
+                    "heart_rate": heart_rate,
+                    "confidence": confidence,
+                    "oxygen": oxygen
+                })
                 if ppg_count % 5 == 0:
                     conn.commit()
             except Exception as e:
@@ -164,12 +169,35 @@ def get_ppg_data():
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    # For simplicity, we return only the heart rate for PPG data.
-    c.execute("SELECT rpi_timestamp, heart_rate FROM ppg_data ORDER BY id ASC")
+    # Return the latest 1000 records (newest first) then reverse the list to display in ascending order.
+    c.execute("SELECT rpi_timestamp, heart_rate, confidence, oxygen FROM ppg_data ORDER BY id DESC LIMIT 1000")
+    rows = c.fetchall()
+    rows.reverse()  # Now rows are in ascending order (oldest first among the latest 1000)
+    data = []
+    for row in rows:
+        data.append({
+            "timestamp": row["rpi_timestamp"],
+            "heart_rate": row["heart_rate"],
+            "confidence": row["confidence"],
+            "oxygen": row["oxygen"]
+        })
+    conn.close()
+    return jsonify(data)
+
+@app.route('/api/temperature_data', methods=['GET'])
+def get_temperature_data():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT rpi_timestamp, temperature_c, temperature_f FROM temperature_data ORDER BY id ASC")
     rows = c.fetchall()
     data = []
     for row in rows:
-        data.append({"timestamp": row["rpi_timestamp"], "ppg": row["heart_rate"]})
+        data.append({
+            "timestamp": row["rpi_timestamp"],
+            "temperature_c": row["temperature_c"],
+            "temperature_f": row["temperature_f"]
+        })
     conn.close()
     return jsonify(data)
 
