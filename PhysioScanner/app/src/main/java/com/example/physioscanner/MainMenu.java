@@ -17,8 +17,9 @@ public class MainMenu extends AppCompatActivity {
     // CardViews for each sensor screen
     CardView cardHeartRate;
     CardView cardECG;
-    CardView card_ppg;      // PPG card
+    CardView card_ppg;
     CardView cardTemperature;
+    CardView cardAllSensors; // NEW CARD
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class MainMenu extends AppCompatActivity {
         cardECG = findViewById(R.id.card_ecg);
         card_ppg = findViewById(R.id.card_ppg);
         cardTemperature = findViewById(R.id.card_temperature);
+        cardAllSensors = findViewById(R.id.card_all_sensors); // NEW
 
         // Set click listeners for navigation
 
@@ -49,13 +51,18 @@ public class MainMenu extends AppCompatActivity {
         // Launch live PPG view (Use PPGActivity for PPG)
         card_ppg.setOnClickListener(v -> {
             Intent intent = new Intent(MainMenu.this, PPGActivity.class);
-            // No need to pass "dataType" extra if PPGActivity is dedicated to PPG
             startActivity(intent);
         });
 
         // Launch Temperature view (TemperatureActivity)
         cardTemperature.setOnClickListener(v -> {
             Intent intent = new Intent(MainMenu.this, TemperatureActivity.class);
+            startActivity(intent);
+        });
+
+        // Launch All Sensors Activity
+        cardAllSensors.setOnClickListener(v -> {
+            Intent intent = new Intent(MainMenu.this, AllSensorsActivity.class);
             startActivity(intent);
         });
     }

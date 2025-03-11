@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/all_sensors_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="8dp">
+
+    <!-- Toolbar or Title (Optional) -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarAllSensors"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#4F6367"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        android:title="Live Monitoring"
+        android:titleTextColor="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ECG Chart -->
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/ecg_chart"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbarAllSensors"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- PPG Chart -->
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/ppg_chart"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        app:layout_constraintTop_toBottomOf="@+id/ecg_chart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Timestamp for last update -->
+    <TextView
+        android:id="@+id/text_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Last Update:"
+        android:textSize="16sp"
+        android:textColor="#000000"
+        app:layout_constraintTop_toBottomOf="@+id/ppg_chart"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp" />
+
+    <!-- Heart Rate -->
+    <TextView
+        android:id="@+id/text_heart_rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HR: -- bpm"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#E53935"
+        app:layout_constraintTop_toBottomOf="@+id/text_timestamp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- Oxygen -->
+    <TextView
+        android:id="@+id/text_oxygen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SpO₂: --%"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#1E88E5"
+        app:layout_constraintTop_toBottomOf="@+id/text_heart_rate"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- Confidence -->
+    <TextView
+        android:id="@+id/text_confidence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confidence: --%"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#8E24AA"
+        app:layout_constraintTop_toBottomOf="@+id/text_oxygen"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- Temperature -->
+    <TextView
+        android:id="@+id/text_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Temp: -- °C"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FF9800"
+        app:layout_constraintTop_toBottomOf="@+id/text_confidence"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- Home Button -->
+    <Button
+        android:id="@+id/home_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

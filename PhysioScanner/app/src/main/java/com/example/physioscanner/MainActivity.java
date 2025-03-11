@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -26,44 +27,36 @@ import io.socket.emitter.Emitter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String SOCKET_URL = "http://192.168.2.94:5000"; // Use http:// for Socket.IO
-    private LineChart lineChart;
-    private LineDataSet dataSet;
-    private LineData chartData;
-    private TextView timestampText, valueText;
+    private static final String SOCKET_URL = "http://10.100.242.3:5000";
+    private static final String TAG = "MainActivity";
+    private LineChart ecgChart;
+    private LineDataSet ecgDataSet;
+    private LineData ecgLineData;
+    private TextView timestampText, ecgValueText;
     private Socket mSocket;
-    private String dataType = "ecg"; // default mode is ECG
 
     {
         try {
             mSocket = IO.socket(SOCKET_URL);
         } catch (URISyntaxException e) {
-            Log.e("SocketIO", "Error creating socket", e);
+            Log.e(TAG, "Error creating socket", e);
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); // Layout must have ecg_chart, timestamp_text, voltage_text, view_database_button, home_button
 
-        // Check for the "dataType" extra; if absent, default to "ecg"
-        Intent intent = getIntent();
-        if (intent.hasExtra("dataType")) {
-            dataType = intent.getStringExtra("dataType");
-        }
-        Log.d("MainActivity", "Data type: " + dataType);
-
-        // Find UI elements (the layout uses the same IDs regardless of mode)
-        lineChart = findViewById(R.id.ecg_chart);
+        ecgChart = findViewById(R.id.ecg_chart);
         timestampText = findViewById(R.id.timestamp_text);
-        valueText = findViewById(R.id.voltage_text);
+        ecgValueText = findViewById(R.id.voltage_text);
 
         Button viewDatabaseButton = findViewById(R.id.view_database_button);
         viewDatabaseButton.setOnClickListener(v -> {
             mSocket.disconnect();
             Intent dbIntent = new Intent(MainActivity.this, DatabaseViewActivity.class);
-            dbIntent.putExtra("dataType", dataType);
+            dbIntent.putExtra("dataType", "ecg");
             startActivity(dbIntent);
         });
 
@@ -73,115 +66,71 @@ public class MainActivity extends AppCompatActivity {
             startActivity(homeIntent);
         });
 
-        setupChart();
+        setupEcgChart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mSocket.connect();
-        if (dataType.equalsIgnoreCase("ppg")) {
-            mSocket.on("ppg_data", onNewData);
-        } else {
-            mSocket.on("ecg_data", onNewData);
-        }
+        mSocket.on("ecg_data", onNewEcgData);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mSocket.disconnect();
-        if (dataType.equalsIgnoreCase("ppg")) {
-            mSocket.off("ppg_data", onNewData);
-        } else {
-            mSocket.off("ecg_data", onNewData);
-        }
+        mSocket.off("ecg_data", onNewEcgData);
     }
 
-    private void setupChart() {
-        if (dataType.equalsIgnoreCase("ppg")) {
-            dataSet = new LineDataSet(new java.util.ArrayList<Entry>(), "PPG Data");
-            dataSet.setColor(getResources().getColor(android.R.color.holo_green_dark));
-            dataSet.setDrawValues(false); // Remove point labels
-            dataSet.setDrawCircles(false);
-            chartData = new LineData(dataSet);
-            lineChart.setData(chartData);
+    private void setupEcgChart() {
+        ecgDataSet = new LineDataSet(new ArrayList<Entry>(), "Gravity ECG Data");
+        ecgDataSet.setColor(getResources().getColor(android.R.color.holo_blue_dark));
+        ecgDataSet.setDrawCircles(false);
+        ecgDataSet.setDrawValues(false);
+        ecgLineData = new LineData(ecgDataSet);
+        ecgChart.setData(ecgLineData);
 
-            XAxis xAxis = lineChart.getXAxis();
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setDrawGridLines(false);
-            xAxis.setAxisMinimum(0);
+        XAxis xAxis = ecgChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setAxisMinimum(0);
 
-            YAxis leftAxis = lineChart.getAxisLeft();
-            leftAxis.setAxisMinimum(0f);
-            leftAxis.setAxisMaximum(200f);  // typical heart rate range
+        YAxis leftAxis = ecgChart.getAxisLeft();
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMaximum(5f);  // Voltage range for ECG
 
-            lineChart.getAxisRight().setEnabled(false);
-            lineChart.getDescription().setEnabled(false);
-            lineChart.setTouchEnabled(false);
-            lineChart.invalidate();
-        } else {
-            // ECG default mode
-            dataSet = new LineDataSet(new java.util.ArrayList<Entry>(), "ECG Data");
-            dataSet.setColor(getResources().getColor(android.R.color.holo_blue_dark));
-            dataSet.setDrawValues(false); // Remove point labels
-            dataSet.setDrawCircles(false);
-            chartData = new LineData(dataSet);
-            lineChart.setData(chartData);
-
-            XAxis xAxis = lineChart.getXAxis();
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setDrawGridLines(false);
-            xAxis.setAxisMinimum(0);
-
-            YAxis leftAxis = lineChart.getAxisLeft();
-            leftAxis.setAxisMinimum(0f);
-            leftAxis.setAxisMaximum(5f);
-
-            lineChart.getAxisRight().setEnabled(false);
-            lineChart.getDescription().setEnabled(false);
-            lineChart.setTouchEnabled(false);
-            lineChart.invalidate();
-        }
+        ecgChart.getAxisRight().setEnabled(false);
+        ecgChart.getDescription().setEnabled(false);
+        ecgChart.setTouchEnabled(false);
+        ecgChart.invalidate();
     }
 
-    private Emitter.Listener onNewData = new Emitter.Listener() {
+    private Emitter.Listener onNewEcgData = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
             runOnUiThread(() -> {
                 try {
                     String timestamp = data.getString("timestamp");
-                    double value;
-                    if (dataType.equalsIgnoreCase("ppg")) {
-                        value = data.getDouble("ppg");
-                        timestampText.setText("Timestamp: " + timestamp);
-                        valueText.setText("Heart Rate: " + value);
-                    } else {
-                        value = data.getDouble("voltage");
-                        timestampText.setText("Timestamp: " + timestamp);
-                        valueText.setText("Voltage: " + value + " V");
-                    }
-                    addEntryToGraph((float) value);
+                    double ecgValue = data.getDouble("value");  // voltage value
+                    timestampText.setText("Timestamp: " + timestamp);
+                    ecgValueText.setText("ECG Voltage: " + ecgValue + " V");
+                    addEcgEntryToGraph((float) ecgValue);
                 } catch (JSONException e) {
-                    Log.e("SocketIO", "Error parsing data", e);
+                    Log.e(TAG, "Error parsing ECG data", e);
                 }
             });
         }
     };
 
-    private void addEntryToGraph(float value) {
-        int xValue = dataSet.getEntryCount();
-        dataSet.addEntry(new Entry(xValue, value));
-        chartData.notifyDataChanged();
-        lineChart.notifyDataSetChanged();
-        if (dataType.equalsIgnoreCase("ppg")) {
-            lineChart.setVisibleXRangeMaximum(50);
-        } else {
-            lineChart.setVisibleXRangeMaximum(100);
-        }
-        // Instantaneously jump to the latest record
-        lineChart.moveViewToX(dataSet.getEntryCount() - 1);
-        lineChart.invalidate();
+    private void addEcgEntryToGraph(float value) {
+        int xValue = ecgDataSet.getEntryCount();
+        ecgDataSet.addEntry(new Entry(xValue, value));
+        ecgLineData.notifyDataChanged();
+        ecgChart.notifyDataSetChanged();
+        ecgChart.setVisibleXRangeMaximum(200); // Show 200 data points at a time
+        ecgChart.moveViewToX(ecgDataSet.getEntryCount() - 1);
+        ecgChart.invalidate();
     }
 }

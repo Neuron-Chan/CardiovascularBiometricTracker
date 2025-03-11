@@ -56,11 +56,11 @@ public class DatabaseViewActivity extends AppCompatActivity {
 
         // Set the API URL based on data type
         if (dataType.equalsIgnoreCase("ppg")) {
-            apiUrl = "http://192.168.2.94:5000/api/ppg_data";
+            apiUrl = "http://10.100.242.3:5000/api/ppg_data";
         } else if (dataType.equalsIgnoreCase("temp")) {
-            apiUrl = "http://192.168.2.94:5000/api/temperature_data";
+            apiUrl = "http://10.100.242.3:5000/api/temperature_data";
         } else {
-            apiUrl = "http://192.168.2.94:5000/api/ecg_data";
+            apiUrl = "http://10.100.242.3:5000/api/ecg_data";
         }
 
         refreshButton.setOnClickListener(v -> new FetchDatabaseTask().execute(apiUrl));
