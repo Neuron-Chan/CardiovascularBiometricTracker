@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "200593780997",
+    "firebase_url": "https://ixmarket-login-register-fbase-default-rtdb.firebaseio.com",
+    "project_id": "ixmarket-login-register-fbase",
+    "storage_bucket": "ixmarket-login-register-fbase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200593780997:android:7dc62130c45bb5eb14c76c",
+        "android_client_info": {
+          "package_name": "com.example.physioscanner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVJLhf5XLPcq76pmT0waVrabBjdHyLHc4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200593780997:android:1f1c509ecfaeed9e14c76c",
+        "android_client_info": {
+          "package_name": "com.example.the6ixmarket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVJLhf5XLPcq76pmT0waVrabBjdHyLHc4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
