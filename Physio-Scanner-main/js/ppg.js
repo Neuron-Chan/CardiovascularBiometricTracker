@@ -15,6 +15,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ✅ Redirect to Database Page on Button Click
+document.querySelector(".database-btn").addEventListener("click", () => {
+    window.location.href = "database.html";
+});
+
 /* ✅ Function to Fetch PPG Data (for Graph & Value) */
 async function fetchLatestPPG() {
     try {
@@ -137,5 +142,5 @@ function updatePPGChart(ppg_value) {
 }
 
 /* ✅ Fetch PPG & Heart Rate Separately (Without Interfering) */
-setInterval(fetchLatestPPG, 210);  // Fetch PPG every 0.21s
+setInterval(fetchLatestPPG, 1000);  // Fetch PPG every 0.21s
 setInterval(fetchLatestHeartRate, 1000);  // Fetch Heart Rate every 1s

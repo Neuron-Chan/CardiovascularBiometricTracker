@@ -15,24 +15,20 @@
             </a>
             <span>Cardiovascular Biometric Tracker</span>
         </div>
-        <button class="sign-in" onclick="location.href='login.html'">Sign in</button>
     </header>
 
     <main class="login-container">
         <div class="login-box">
-            <h2>Login Form</h2>
-            <div class="toggle-buttons">
-                <button class="toggle login active">Login</button>
-                <button class="toggle signup" onclick="location.href='signup.html'">Sign Up</button>
-            </div>
-            <form action="#" method="POST">
-                <input type="email" placeholder="Email Address" required>
-                <input type="password" placeholder="Password" required>
-                <a href="#" class="forgot-password">Forgot Password?</a>
-                <button type="submit" class="submit-btn">Login</button>
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="email" id="login-email" placeholder="Email Address" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" id="login-btn">Login</button>
             </form>
+            <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
         </div>
     </main>
 
+    <script src="script.js" type="module"></script>
 </body>
 </html>

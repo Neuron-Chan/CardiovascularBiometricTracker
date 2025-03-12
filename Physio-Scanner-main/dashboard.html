@@ -12,6 +12,27 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
+    <script>
+        // Redirect to login page if the user is not logged in
+        document.addEventListener("DOMContentLoaded", function () {
+            if (!localStorage.getItem("isLoggedIn")) {
+                window.location.href = "index.html"; // Redirect if not logged in
+            } else {
+                // Display the logged-in user's email or username
+                const userEmail = localStorage.getItem("userEmail") || "User";
+                document.getElementById("usernameDisplay").innerText = userEmail;
+            }
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userEmail");
+            window.location.href = "index.html"; // Redirect to homepage after logout
+        }
+    </script>
+
     <!-- ✅ Firebase from CDN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
@@ -233,8 +254,8 @@
         /* ✅ Ensure All Data Updates Every 0.21-1 Seconds */
         document.addEventListener("DOMContentLoaded", () => {
             createECGChart();
-            setInterval(fetchLatestECG, 210);
-            setInterval(fetchLatestPPG, 210);
+            setInterval(fetchLatestECG, 1000);
+            setInterval(fetchLatestPPG, 1000);
             setInterval(fetchLatestTemperature, 1000);
             setInterval(fetchLatestHeartRate, 1000);
         });
@@ -297,7 +318,6 @@
 </head>
 <body>
 
-    <!-- ✅ Header -->
     <header>
         <div class="logo">
             <a href="dashboard.html">
@@ -305,7 +325,10 @@
             </a>
             <span class="app-title">Cardiovascular Biometric Tracker</span>
         </div>
-        <button class="sign-in">Username</button>
+        <div class="user-controls">
+            <span id="usernameDisplay">User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>             
     </header>
 
     <!-- ✅ Sensor Navigation -->

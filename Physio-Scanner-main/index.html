@@ -8,19 +8,42 @@
 </head>
 <body>
 
+    <script>
+        // Check if user is already logged in and redirect to the dashboard
+        document.addEventListener("DOMContentLoaded", function () {
+            if (localStorage.getItem("isLoggedIn")) {
+                document.getElementById("signInButton").innerText = "Go to Dashboard";
+                document.getElementById("signInButton").onclick = function() {
+                    window.location.href = "dashboard.html";
+                };
+            }
+        });
+
+        // Function to navigate to dashboard only if logged in
+        function redirectToDashboard(event) {
+            event.preventDefault();
+            if (localStorage.getItem("isLoggedIn")) {
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Please sign in or sign up first!");
+                window.location.href = "login.html";
+            }
+        }
+    </script>
+
     <header>
         <div class="logo">
-            <a href="dashboard.html">
+            <a href="#" onclick="redirectToDashboard(event)">
                 <img src="images/Logo.png" alt="Logo">
             </a>
             <span>Cardiovascular Biometric Tracker</span>
         </div>
-        <button class="sign-in" onclick="location.href='login.html'">Sign in</button>
+        <button id="signInButton" class="sign-in" onclick="location.href='login.html'">Sign in</button>
     </header>
 
     <main>
-        <h1>HOOK TITLE</h1>
-        <p>Description of the product</p>
+        <h1>Cardiovascular Biometric Tracker</h1>
+        <p>Smart Heart and Temperature Monitoring, Anytime, Anywhere!</p>
         <button class="sign-up" onclick="location.href='signup.html'">Sign Up</button>
     </main>
 

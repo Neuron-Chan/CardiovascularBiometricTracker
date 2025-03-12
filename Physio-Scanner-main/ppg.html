@@ -14,16 +14,38 @@
 </head>
 <body>
 
-    <!-- ✅ Updated Header -->
-    <header>
-        <div class="logo">
-            <a href="dashboard.html">
-                <img src="images/logo.png" alt="Logo">
-            </a>
-            <span class="app-title">Cardiovascular Biometric Tracker</span>
-        </div>
-        <button class="sign-in">Username</button>
-    </header>
+    <script>
+        // Redirect to login page if the user is not logged in
+        document.addEventListener("DOMContentLoaded", function () {
+            if (!localStorage.getItem("isLoggedIn")) {
+                window.location.href = "index.html"; // Redirect if not logged in
+            } else {
+                // Display the logged-in user's email or username
+                const userEmail = localStorage.getItem("userEmail") || "User";
+                document.getElementById("usernameDisplay").innerText = userEmail;
+            }
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userEmail");
+            window.location.href = "index.html"; // Redirect to homepage after logout
+        }
+    </script>
+
+<header>
+    <div class="logo">
+        <a href="dashboard.html">
+            <img src="images/logo.png" alt="Logo">
+        </a>
+        <span class="app-title">Cardiovascular Biometric Tracker</span>
+    </div>
+    <div class="user-controls">
+        <span id="usernameDisplay">User</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>             
+</header>
 
     <main class="ppg-container">
         

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Database Query</title>
+    
+    <!-- ✅ Link CSS -->
+    <link rel="stylesheet" href="css/database.css">
+    
+    <!-- ✅ Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    
+        // ✅ Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCdlgneYba6TU5SyyFT3ZEz8DzO1_-hdAA",
+            authDomain: "ixmarket-login-register-fbase.firebaseapp.com",
+            projectId: "ixmarket-login-register-fbase",
+            storageBucket: "ixmarket-login-register-fbase.appspot.com",
+            messagingSenderId: "200593780997",
+            appId: "1:200593780997:web:40f4c31ce0ff3c8414c76c"
+        };
+    
+        // ✅ Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+    
+        // ✅ Fetch Available Fields from Firestore
+        async function fetchFields() {
+            const collectionName = document.getElementById("collection-select").value;
+            const querySnapshot = await getDocs(collection(db, collectionName));
+            
+            if (!querySnapshot.empty) {
+                const firstDoc = querySnapshot.docs[0].data();
+                const fieldsDropdowns = document.querySelectorAll(".field-select");
+                
+                fieldsDropdowns.forEach(dropdown => {
+                    dropdown.innerHTML = ""; // Clear previous options
+                    Object.keys(firstDoc).forEach(field => {
+                        let option = document.createElement("option");
+                        option.value = field;
+                        option.textContent = field;
+                        dropdown.appendChild(option);
+                    });
+                });
+            }
+        }
+    
+        // ✅ Function to Add Query Sections (Order By, Where, Limit)
+        function addQuery(type) {
+            const queryContainer = document.getElementById("query-conditions");
+    
+            let queryElement = document.createElement("div");
+            queryElement.classList.add("query-box");
+    
+            if (type === "orderBy") {
+                queryElement.innerHTML = `
+                    <label>Order By:</label>
+                    <select class="field-select"></select>
+                    <select class="order-direction">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                    <button onclick="removeQuery(this)">Remove</button>
+                `;
+            } else if (type === "where") {
+                queryElement.innerHTML = `
+                    <label>Where:</label>
+                    <select class="field-select"></select>
+                    <select class="operator-select">
+                        <option value="==">=</option>
+                        <option value=">">></option>
+                        <option value="<"><</option>
+                        <option value=">=">>=</option>
+                        <option value="<="><=</option>
+                    </select>
+                    <input type="text" class="value-input" placeholder="Enter value">
+                    <button onclick="removeQuery(this)">Remove</button>
+                `;
+            } else if (type === "limit") {
+                queryElement.innerHTML = `
+                    <label>Limit:</label>
+                    <input type="number" class="limit-input" min="1" placeholder="Enter number">
+                    <button onclick="removeQuery(this)">Remove</button>
+                `;
+            }
+    
+            queryContainer.appendChild(queryElement);
+            fetchFields(); // Update field dropdowns
+        }
+    
+        // ✅ Function to Remove Query Sections
+        function removeQuery(button) {
+            button.parentElement.remove();
+        }
+    
+        // ✅ Function to Query Firestore Based on User Input
+        async function queryFirestore() {
+            const collectionName = document.getElementById("collection-select").value;
+            let q = query(collection(db, collectionName));
+    
+            // Apply Dynamic Queries
+            document.querySelectorAll(".query-box").forEach(queryBox => {
+                if (queryBox.innerHTML.includes("Order By")) {
+                    let field = queryBox.querySelector(".field-select").value;
+                    let direction = queryBox.querySelector(".order-direction").value;
+                    q = query(q, orderBy(field, direction));
+                } else if (queryBox.innerHTML.includes("Where")) {
+                    let field = queryBox.querySelector(".field-select").value;
+                    let operator = queryBox.querySelector(".operator-select").value;
+                    let value = queryBox.querySelector(".value-input").value;
+                    q = query(q, where(field, operator, value));
+                } else if (queryBox.innerHTML.includes("Limit")) {
+                    let limitValue = parseInt(queryBox.querySelector(".limit-input").value);
+                    q = query(q, limit(limitValue));
+                }
+            });
+    
+            // Fetch and Display Results
+            try {
+                const querySnapshot = await getDocs(q);
+                let output = `<h3>Results for ${collectionName}</h3>`;
+
+                if (querySnapshot.empty) {
+                    output += "<p>No results found.</p>";
+                } else {
+                    // ✅ Define the correct columns based on the selected collection
+                    let columns = [];
+                    if (collectionName === "ecg_data") {
+                        columns = ["ecg_value", "timestamp", "arduino_timestamp"];
+                    } else if (collectionName === "ppg_gravity_data") {
+                        columns = ["ppg_value", "timestamp", "arduino_timestamp"];
+                    } else if (collectionName === "tmp102_data") {
+                        columns = ["temperature_c", "temperature_f", "timestamp"];
+                    } else if (collectionName === "ppg_max_data") {
+                        columns = ["heart_rate", "timestamp", "arduino_timestamp"];
+                    }
+
+                    // ✅ Create Table Header
+                    output += "<table><thead><tr>";
+                    columns.forEach(col => {
+                        output += `<th>${col.replace("_", " ").toUpperCase()}</th>`;
+                    });
+                    output += "</tr></thead><tbody>";
+
+                    // ✅ Fill Table with Data
+                    querySnapshot.forEach(doc => {
+                        let data = doc.data();
+                        output += "<tr>";
+                        columns.forEach(col => {
+                            output += `<td>${data[col] !== undefined ? data[col] : "N/A"}</td>`;
+                        });
+                        output += "</tr>";
+                    });
+
+                    output += "</tbody></table>";
+                }
+
+                document.getElementById("database-content").innerHTML = output;
+            } catch (error) {
+                console.error("Error fetching Firestore data:", error);
+            }
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("collection-select").addEventListener("change", fetchFields);
+            document.getElementById("query-btn").addEventListener("click", queryFirestore);
+        });
+    
+        // ✅ EXPOSE FUNCTIONS TO WINDOW (Fixes "addQuery is not defined" error)
+        window.addQuery = addQuery;
+        window.removeQuery = removeQuery;
+    
+    </script>
+    
+    
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="dashboard.html">
+                <img src="images/logo.png" alt="Logo">
+            </a>
+            <span class="app-title">Cardiovascular Biometric Tracker</span>
+        </div>
+        <button class="sign-in">Username</button>
+    </header>
+
+    <main class="database-container">
+        <div class="query-conditions">
+            <h1>Firestore Database Query</h1>
+
+            <label for="collection-select">Collection:</label>
+            <select id="collection-select">
+                <option value="ecg_data">ECG Data</option>
+                <option value="ppg_gravity_data">PPG Data</option>
+                <option value="ppg_max_data">Heart Rate Data</option>
+                <option value="tmp102_data">Temperature Data</option>
+            </select>
+
+            <button onclick="addQuery('orderBy')">Add Order By</button>
+            <button onclick="addQuery('where')">Add Where</button>
+            <button onclick="addQuery('limit')">Add Limit</button>
+
+            <div id="query-conditions"></div>
+
+            <button id="query-btn">Run Query</button>
+        </div>
+
+        <div id="database-content">Results will be displayed here...</div>
+    </main>
+
+</body>
+</html>
