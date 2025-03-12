@@ -15,6 +15,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ✅ Redirect to Database Page on Button Click
+document.querySelector(".database-btn").addEventListener("click", () => {
+    window.location.href = "database.html";
+});
+
 // ✅ Function to Fetch Latest ECG Data from Firestore
 async function fetchLatestECG() {
     try {

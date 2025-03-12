@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Database Query</title>
+    <title>Database Query</title>
     
     <!-- ✅ Link CSS -->
     <link rel="stylesheet" href="css/database.css">
@@ -173,6 +173,23 @@
         window.addQuery = addQuery;
         window.removeQuery = removeQuery;
     
+        // Redirect to login page if the user is not logged in
+        document.addEventListener("DOMContentLoaded", function () {
+            if (!localStorage.getItem("isLoggedIn")) {
+                window.location.href = "index.html"; // Redirect if not logged in
+            } else {
+                // Display the logged-in user's email or username
+                const userEmail = localStorage.getItem("userEmail") || "User";
+                document.getElementById("usernameDisplay").innerText = userEmail;
+            }
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userEmail");
+            window.location.href = "index.html"; // Redirect to homepage after logout
+        }
     </script>
     
     
@@ -186,12 +203,15 @@
             </a>
             <span class="app-title">Cardiovascular Biometric Tracker</span>
         </div>
-        <button class="sign-in">Username</button>
+        <div class="user-controls">
+            <span id="usernameDisplay">User</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div> 
     </header>
 
     <main class="database-container">
         <div class="query-conditions">
-            <h1>Firestore Database Query</h1>
+            <h1>Database Query</h1>
 
             <label for="collection-select">Collection:</label>
             <select id="collection-select">

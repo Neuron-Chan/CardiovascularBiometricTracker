@@ -16,6 +16,24 @@ header {
     color: white;
 }
 
+/* ✅ Logout Button */
+.logout-btn {
+    background: #D32F2F; /* Red background */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: #b71c1c;
+    transform: scale(1.05);
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -29,6 +47,7 @@ header {
 .app-title {
     font-size: 22px;
     font-weight: bold;
+    align-items: center;
 }
 
 /* ✅ Main Container */
