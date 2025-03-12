@@ -1,0 +1,158 @@
+/* General Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: #37474F;
+    color: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.app-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Sensor Navigation */
+.sensor-values {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.sensor-btn {
+    background: #03A9F4;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.sensor-btn:hover {
+    background: #0288D1;
+}
+
+/* ✅ Dashboard Layout */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Left (Graphs) - Right (Values) */
+    gap: 60px; /* ✅ Increased spacing between squares */
+    width: 90%;
+    margin: 30px auto;
+}
+
+/* Left Side (ECG & PPG Graphs) */
+.left-side {
+    display: flex;
+    flex-direction: column;
+    gap: 0px; /* ✅ Increased space between ECG & PPG boxes */
+}
+
+/* Right Side (Temperature & Heart Rate Values) */
+.right-side {
+    display: flex;
+    flex-direction: column;
+    gap: 0px; /* ✅ Increased space between Temperature & Heart Rate boxes */
+}
+
+/* Large Sensor Boxes (For Graphs) */
+.large-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    justify-content: right;
+}
+
+/* Small Sensor Boxes (For Values) */
+.small-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ✅ Proper Spacing Fix */
+.large-box + .large-box {
+    margin-top: 20px; /* Increased margin for more spacing */
+}
+
+.small-box + .small-box {
+    margin-top: 20px; /* Increased margin for more spacing */
+}
+
+/* Graph Styling */
+canvas {
+    width: 100% !important;
+    height: 220px !important;
+    align-items: left;
+}
+
+/* Sensor Values Positioned Right */
+.sensor-value {
+    font-size: 48px;
+    font-weight: bold;
+    color: red;
+    text-align: right;
+    width: 25%;
+}
+
+/* ECG & PPG Box Adjustments */
+.ecg-box, .ppg-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.ecg-graph, .ppg-graph {
+    width: 75%;
+    text-align: left;
+}
+
+/* .ecg-value-box, .ppg-value-box {
+    width: 25%;
+    display: flex;
+    align-items: right;
+    justify-content: center;
+} */
+
+/* Center the Titles in ECG and PPG Boxes */
+.ecg-box h2, .ppg-box h2 {
+    text-align: center;
+    width: 100%;
+}

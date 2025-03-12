@@ -1,0 +1,118 @@
+/* ✅ General Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* ✅ Header */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: #37474F;
+    color: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.app-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* ✅ Sensor Buttons */
+.sensor-values {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.sensor-btn {
+    background: #03A9F4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.sensor-btn:hover {
+    background: #0288D1;
+}
+
+/* ✅ PPG Content Layout */
+.ppg-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.ppg-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+}
+
+/* ✅ PPG Info */
+.ppg-info {
+    text-align: center;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+}
+
+.rate-text {
+    font-size: 48px;
+    font-weight: bold;
+    color: red;
+}
+
+/* ✅ PPG Graph */
+.ppg-graph {
+    background: #E0E0E0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 600px;
+    height: 300px;
+}
+
+/* ✅ Database Button */
+.database-btn {
+    background: navy;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.database-btn:hover {
+    background: #000080;
+}
+
+/* ✅ Timestamp */
+.ppg-footer {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #555;
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Cardiovascular Biometric Tracker</title>
+    <link rel="stylesheet" href="css/signup.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="dashboard.html">
+                <img src="images/logo.png" alt="Logo">
+            </a>
+            <span>Cardiovascular Biometric Tracker</span>
+        </div>
+        <button class="sign-in" onclick="location.href='login.html'">Sign in</button>
+    </header>
+
+    <main class="signup-container">
+        <div class="signup-box">
+            <h2>Sign Up Form</h2>
+            <div class="toggle-buttons">
+                <button class="toggle login" onclick="location.href='login.html'">Login</button>
+                <button class="toggle signup active">Sign Up</button>
+            </div>
+            <form action="#" method="POST">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Email Address" required>
+                <input type="password" placeholder="Password" required>
+                <input type="password" placeholder="Confirm Password" required>
+                <button type="submit" class="submit-btn">Sign Up</button>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

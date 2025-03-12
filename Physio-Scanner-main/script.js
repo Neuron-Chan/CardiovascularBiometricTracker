@@ -1,0 +1,111 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCdlgneYba6TU5SyyFT3ZEz8DzO1_-hdAA",
+    authDomain: "ixmarket-login-register-fbase.firebaseapp.com",
+    databaseURL: "https://ixmarket-login-register-fbase-default-rtdb.firebaseio.com",
+    projectId: "ixmarket-login-register-fbase",
+    storageBucket: "ixmarket-login-register-fbase.appspot.com",
+    messagingSenderId: "200593780997",
+    appId: "1:200593780997:web:40f4c31ce0ff3c8414c76c"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Generic function to fetch latest data from Firestore
+async function fetchLatestData(collectionName, fieldName) {
+    try {
+        const colRef = collection(db, collectionName);
+        const q = query(colRef, orderBy("timestamp", "desc"), limit(10)); // Fetch last 10 values
+        const querySnapshot = await getDocs(q);
+
+        let data = [];
+        let timestamps = [];
+
+        querySnapshot.forEach(doc => {
+            data.unshift(doc.data()[fieldName]);  // Extract specific field (e.g., ecg_value, ppg_value)
+            timestamps.unshift(new Date(doc.data().timestamp).toLocaleTimeString());
+        });
+
+        return { data, timestamps };
+    } catch (error) {
+        console.error(`Error fetching ${collectionName} data:`, error);
+        return { data: [], timestamps: [] };
+    }
+}
+
+// Function to Update ECG Graph & Value
+async function updateECG() {
+    const ctx = document.getElementById('ecgChart').getContext('2d');
+    const { data, timestamps } = await fetchLatestData("ecg_data", "ecg_value");
+
+    if (data.length > 0) {
+        document.getElementById("ecgValue").innerText = `${data[data.length - 1].toFixed(2)} V`; // Update small number
+    }
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timestamps,
+            datasets: [{
+                label: 'ECG Signal (V)',
+                data: data,
+                borderColor: 'red',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false }, // Hide X labels for cleaner look
+                y: { display: false }  // Hide Y labels for minimal UI
+            },
+            elements: { point: { radius: 0 } } // Remove dots from graph
+        }
+    });
+}
+
+// Function to Update PPG Graph & Value
+async function updatePPG() {
+    const ctx = document.getElementById('ppgChart').getContext('2d');
+    const { data, timestamps } = await fetchLatestData("ppg_gravity_data", "ppg_value");
+
+    if (data.length > 0) {
+        document.getElementById("ppgValue").innerText = `${data[data.length - 1]} bpm`; // Update small number
+    }
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timestamps,
+            datasets: [{
+                label: 'PPG Signal',
+                data: data,
+                borderColor: 'blue',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false }, // Hide X labels for cleaner look
+                y: { display: false }  // Hide Y labels for minimal UI
+            },
+            elements: { point: { radius: 0 } } // Remove dots from graph
+        }
+    });
+}
+
+// Load Data When Page Loads
+document.addEventListener("DOMContentLoaded", async () => {
+    await updateECG();
+    await updatePPG();
+});

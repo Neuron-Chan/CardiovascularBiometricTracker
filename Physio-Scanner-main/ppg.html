@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPG Monitoring</title>
+    
+    <!-- ✅ Google Font for Modern Look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/ppg.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- ✅ Updated Header -->
+    <header>
+        <div class="logo">
+            <a href="dashboard.html">
+                <img src="images/logo.png" alt="Logo">
+            </a>
+            <span class="app-title">Cardiovascular Biometric Tracker</span>
+        </div>
+        <button class="sign-in">Username</button>
+    </header>
+
+    <main class="ppg-container">
+        
+        <!-- Sensor Values for Quick Navigation -->
+        <div class="sensor-values">
+            <button class="sensor-btn" onclick="location.href='ecg.html'">ECG<span id="ecg"></span></button>
+            <button class="sensor-btn" onclick="location.href='temperature.html'">Temperature<span id="temperature"></span></button>
+        </div>
+
+        <!-- ✅ Improved PPG Display -->
+        <div class="ppg-content">
+            <div class="ppg-info">
+                <h1 class="title">PPG Sensor</h1>
+                <h2 class="ppg-text">PPG: <span id="ppgValue">--</span></h2>
+                <h3 class="heart-rate-text">Heart Rate: <span id="heartRateValue">--</span> BPM</h3> 
+                <button class="database-btn">View Database</button>
+            </div>
+
+            <!-- ✅ Styled Graph Area (PPG Only) -->
+            <div class="ppg-graph">
+                <canvas id="ppgChart"></canvas>
+            </div>
+        </div>
+
+        <!-- ✅ Updated Timestamp UI -->
+        <div class="ppg-footer">
+            <p>Timestamp: <span id="timestamp">--</span></p>
+        </div>
+
+    </main>
+
+    <script type="module" src="js/ppg.js"></script>
+
+    <style>
+        /* ✅ Smaller PPG Text with Red Color */
+        .ppg-text {
+            font-size: 20px; /* Decreased size */
+            color: red; /* Red for emphasis */
+            font-weight: bold;
+        }
+
+        /* ✅ Slightly Larger Heart Rate Text */
+        .heart-rate-text {
+            font-size: 18px; /* Larger than before but smaller than PPG */
+            color: black; /* Standard color */
+            font-weight: 500;
+            margin-top: 5px; /* Adds slight spacing below PPG */
+        }
+    </style>
+
+</body>
+</html>

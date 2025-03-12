@@ -1,0 +1,76 @@
+/* General Page Styles */
+body {
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+/* Header Styles */
+header {
+    background-color: #a7bdc3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 40px;
+    margin-right: 10px;
+}
+
+.logo span {
+    font-size: 16px;
+}
+
+/* Sign-in Button */
+.sign-in {
+    background-color: #915656;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.sign-in:hover {
+    background-color: #7a4747;
+}
+
+/* Main Content */
+main {
+    margin-top: 50px;
+}
+
+h1 {
+    font-size: 50px;
+    font-weight: bold;
+}
+
+p {
+    font-size: 20px;
+}
+
+/* Sign-up Button */
+.sign-up {
+    background-color: #a7bdc3;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.sign-up:hover {
+    background-color: #91a6af;
+}

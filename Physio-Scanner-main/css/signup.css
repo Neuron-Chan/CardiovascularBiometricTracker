@@ -1,0 +1,121 @@
+/* signup.css - Styles for the Sign-Up Page */
+
+/* General Page Styles */
+body {
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+/* Header Styles */
+header {
+    background-color: #a7bdc3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 40px;
+    margin-right: 10px;
+}
+
+.logo span {
+    font-size: 16px;
+}
+
+/* Sign-in Button */
+.sign-in {
+    background-color: #915656;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.sign-in:hover {
+    background-color: #7a4747;
+}
+
+/* Centering the Sign-Up Form */
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Sign-Up Form Box */
+.signup-box {
+    background-color: #a7bdc3;
+    padding: 30px;
+    border-radius: 8px;
+    width: 350px;
+    text-align: center;
+}
+
+/* Form Title */
+.signup-box h2 {
+    font-family: 'Courier New', Courier, monospace;
+    margin-bottom: 15px;
+}
+
+/* Toggle Buttons */
+.toggle-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.toggle {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.login {
+    background-color: white;
+    color: black;
+}
+
+.signup {
+    background-color: navy;
+    color: white;
+}
+
+/* Form Inputs */
+form input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Sign-Up Button */
+.submit-btn {
+    background-color: navy;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background-color: darkblue;
+}

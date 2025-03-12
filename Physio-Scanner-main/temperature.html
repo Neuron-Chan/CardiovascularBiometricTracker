@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Monitoring</title>
+
+    <!-- ✅ Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/temperature.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- ✅ Header -->
+    <header>
+        <div class="logo">
+            <a href="dashboard.html">
+                <img src="images/logo.png" alt="Logo">
+            </a>
+            <span class="app-title">Cardiovascular Biometric Tracker</span>
+        </div>
+        <button class="sign-in">Username</button>
+    </header>
+
+    <main class="temperature-container">
+
+        <!-- ✅ Sensor Navigation -->
+        <div class="sensor-values">
+            <button class="sensor-btn" onclick="location.href='ecg.html'">ECG<span id="ecg"></span></button>
+            <button class="sensor-btn" onclick="location.href='ppg.html'">PPG<span id="ppg"></span></button>
+        </div>
+
+        <!-- ✅ Temperature Display -->
+        <div class="temperature-content">
+            <div class="temperature-info">
+                <h1 class="title">Temperature Sensor</h1>
+                <h2 class="temperature-main"><span id="temperatureC">--</span>°C</h2>
+                <h3 class="temperature-small"><span id="temperatureF">--</span>°F</h3>
+                <button class="database-btn">View Database</button>
+            </div>
+
+            <!-- ✅ Temperature Graph -->
+            <div class="temperature-graph">
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </div>
+
+        <!-- ✅ Timestamp Display -->
+        <div class="temperature-footer">
+            <p>Timestamp: <span id="timestamp">--</span></p>
+        </div>
+
+    </main>
+
+    <script type="module" src="js/temperature.js"></script>
+
+</body>
+</html>

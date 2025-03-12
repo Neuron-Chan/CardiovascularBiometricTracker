@@ -1,0 +1,108 @@
+/* heart_rate.css - Styles for Heart Rate Page */
+
+/* General Page Styles */
+body {
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+/* Header */
+header {
+    background-color: #a7bdc3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 40px;
+    margin-right: 10px;
+}
+
+.logo span {
+    font-size: 16px;
+}
+
+/* Username Button */
+.sign-in {
+    background-color: #915656;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Sensor Value Buttons */
+.sensor-values {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.sensor-btn {
+    background-color: #00a8e8;
+    color: white;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Main Heart Rate Section */
+.heart-rate-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.heart-rate-info {
+    text-align: left;
+    margin-right: 40px;
+}
+
+.heart-rate-info h1 {
+    font-size: 40px;
+}
+
+.rate-text {
+    color: red;
+    font-size: 28px;
+}
+
+/* Database Button */
+.database-btn {
+    background-color: navy;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Heart Rate Graph */
+.heart-rate-graph {
+    background-color: #a7bdc3;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    height: 300px;
+}
+
+/* Footer */
+.heart-rate-footer {
+    margin-top: 20px;
+    font-size: 18px;
+}

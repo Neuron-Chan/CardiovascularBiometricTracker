@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECG Monitoring</title>
+
+    <!-- ✅ Google Font for Consistent Design -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/ecg.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- ✅ Header (Same as PPG Page) -->
+    <header>
+        <div class="logo">
+            <a href="dashboard.html">
+                <img src="images/logo.png" alt="Logo">
+            </a>
+            <span class="app-title">Cardiovascular Biometric Tracker</span>
+        </div>
+        <button class="sign-in">Username</button>
+    </header>
+
+    <main class="ecg-container">
+
+        <!-- Sensor Values for Quick Navigation -->
+        <div class="sensor-values">
+            <button class="sensor-btn" onclick="location.href='ppg.html'">PPG<span id="ppg"></span></button>
+            <button class="sensor-btn" onclick="location.href='temperature.html'">Temperature<span id="temperature"></span></button>
+        </div>
+
+        <!-- ✅ Improved ECG Display -->
+        <div class="ecg-content">
+            <div class="ecg-info">
+                <h1 class="title">ECG Sensor</h1>
+                <h2 class="rate-text"><span id="ecgValue">--</span> V</h2>
+                <button class="database-btn">View Database</button>
+            </div>
+
+            <!-- ✅ Styled Graph Area -->
+            <div class="ecg-graph">
+                <canvas id="ecgChart"></canvas>
+            </div>
+        </div>
+
+        <!-- ✅ Updated Timestamp UI -->
+        <div class="ecg-footer">
+            <p>Timestamp: <span id="timestamp">--</span></p>
+        </div>
+
+    </main>
+
+    <script type="module" src="js/ecg.js"></script>
+
+</body>
+</html>

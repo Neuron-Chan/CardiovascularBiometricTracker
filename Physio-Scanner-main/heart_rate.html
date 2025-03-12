@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Rate Monitoring</title>
+
+    <!-- ✅ Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/heart_rate.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="js/heart_rate.js"></script>
+</head>
+<body>
+
+    <!-- ✅ Header -->
+    <header>
+        <div class="logo">
+            <a href="dashboard.html">
+                <img src="images/logo.png" alt="Logo">
+            </a>
+            <span class="app-title">Cardiovascular Biometric Tracker</span>
+        </div>
+        <button class="sign-in">Username</button>
+    </header>
+
+    <main class="heart-rate-container">
+
+        <!-- ✅ Sensor Navigation -->
+        <div class="sensor-values">
+            <button class="sensor-btn" onclick="location.href='ecg.html'">ECG <span id="ecg">--</span> V</button>
+            <button class="sensor-btn" onclick="location.href='ppg.html'">PPG <span id="ppg">--</span></button>
+            <button class="sensor-btn" onclick="location.href='temperature.html'">Temperature <span id="temperature">--</span>°C</button>
+        </div>
+
+        <!-- ✅ Heart Rate Display -->
+        <div class="heart-rate-content">
+            <div class="heart-rate-info">
+                <h1 class="title">Heart Rate Sensor</h1>
+                <h2 class="rate-text"><span id="heartRateValue">--</span> BPM</h2>
+                <button class="database-btn">View Database</button>
+            </div>
+
+            <!-- ✅ Heart Rate Graph -->
+            <div class="heart-rate-graph">
+                <canvas id="heartRateChart"></canvas>
+            </div>
+        </div>
+
+        <!-- ✅ Timestamp Display -->
+        <div class="heart-rate-footer">
+            <p>Timestamp: <span id="timestamp">--</span></p>
+        </div>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
