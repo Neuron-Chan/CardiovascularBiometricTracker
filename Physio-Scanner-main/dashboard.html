@@ -90,7 +90,11 @@
                     const latestData = querySnapshot.docs[0].data();
 
                     // ✅ Update PPG Value Display
-                    document.getElementById("ppgValue").innerText = latestData.ppg_value || "--";
+                    document.getElementById("ppgValue").innerText =
+                        latestData.ppg_value !== undefined && latestData.ppg_value !== null
+                            ? latestData.ppg_value
+                            : "--";
+
 
                     // ✅ Update PPG Graph
                     updatePPGChart(latestData.ppg_value);
@@ -119,24 +123,28 @@
         /* ✅ Function to Fetch the Latest Non-Zero Heart Rate Value */
         async function fetchLatestHeartRate() {
             try {
-                const colRef = db.collection("ppg_max_data");
-                const querySnapshot = await colRef.orderBy("timestamp", "desc").limit(10).get();
+                const colRef = collection(db, "ppg_max_data");
+                const q = query(colRef, orderBy("timestamp", "desc"), limit(10));
+                const querySnapshot = await getDocs(q);
 
-                console.log("Heart Rate Query Snapshot:", querySnapshot.docs.map(doc => doc.data())); // Debugging Log
+                console.log("Heart Rate Query Snapshot:", querySnapshot.docs.map(doc => doc.data())); // Debugging
 
                 let latestValidHeartRate = "--";
                 let latestValidTimestamp = "--";
 
                 for (const doc of querySnapshot.docs) {
                     const data = doc.data();
-                    if (data.heart_rate && data.heart_rate > 0) { // ✅ Ensure non-zero value
+                    if (data.heart_rate && data.heart_rate > 0) {
                         latestValidHeartRate = data.heart_rate;
                         latestValidTimestamp = data.timestamp;
                         break;
                     }
                 }
 
-                document.getElementById("dashboardHeartRate").innerText = latestValidHeartRate;
+                document.getElementById("dashboardHeartRate").innerText =
+                    latestValidHeartRate !== "--" ? `${latestValidHeartRate} BPM` : "--";
+
+
                 document.getElementById("timestamp").innerText = latestValidTimestamp;
 
             } catch (error) {
@@ -254,8 +262,8 @@
         /* ✅ Ensure All Data Updates Every 0.21-1 Seconds */
         document.addEventListener("DOMContentLoaded", () => {
             createECGChart();
-            setInterval(fetchLatestECG, 1000);
-            setInterval(fetchLatestPPG, 1000);
+            setInterval(fetchLatestECG, 210);
+            setInterval(fetchLatestPPG, 210);
             setInterval(fetchLatestTemperature, 1000);
             setInterval(fetchLatestHeartRate, 1000);
         });
@@ -282,6 +290,15 @@
             text-align: justify;
             width: 20%;
         }
+
+        .sensor-value2 {
+            white-space: nowrap;
+            display: inline-block;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: red;
+        }
+
         
         /* ✅ Ensure PPG Graph Displays Properly */
         .ppg-box {
@@ -370,7 +387,7 @@
 
             <div class="sensor-box small-box">
                 <h2>Heart Rate</h2>
-                <span class="sensor-value" id="dashboardHeartRate"> BPM</span>
+                <span class="sensor-value2" id="dashboardHeartRate">--</span>
             </div>
         </div>
 

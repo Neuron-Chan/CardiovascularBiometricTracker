@@ -23,23 +23,29 @@ document.querySelector(".database-btn").addEventListener("click", () => {
 /* ✅ Function to Fetch PPG Data (for Graph & Value) */
 async function fetchLatestPPG() {
     try {
-        const colRef = collection(db, "ppg_gravity_data"); // Ensure correct collection
-        const q = query(colRef, orderBy("timestamp", "desc"), limit(1)); // Fetch latest entry
+        const colRef = collection(db, "ppg_gravity_data");
+        const q = query(colRef, orderBy("timestamp", "desc"), limit(1));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
             const latestData = querySnapshot.docs[0].data();
 
-            // ✅ Update PPG Value Display
-            document.getElementById("ppgValue").innerText = latestData.ppg_value || "--";
+            document.getElementById("ppgValue").innerText =
+                latestData.ppg_value !== undefined && latestData.ppg_value !== null
+                    ? latestData.ppg_value
+                    : "--";
 
-            // ✅ Update PPG Graph
+            // ✅ Update timestamp
+            document.getElementById("timestamp").innerText =
+                latestData.timestamp ?? "--";
+
             updatePPGChart(latestData.ppg_value);
         }
     } catch (error) {
         console.error("Error fetching PPG data:", error);
     }
 }
+
 
 /* ✅ Function to Fetch the Latest Non-Zero Heart Rate Data */
 async function fetchLatestHeartRate() {
@@ -62,6 +68,10 @@ async function fetchLatestHeartRate() {
 
         // ✅ Update Heart Rate Display (Only Latest Non-Zero)
         document.getElementById("heartRateValue").innerText = latestValidHeartRate;
+            latestData.latestValidHeartRate !== undefined && latestData.latestValidHeartRate !== null
+            ? latestData.latestValidHeartRate
+            : "--";
+
         document.getElementById("timestamp").innerText = latestValidTimestamp;
 
     } catch (error) {
