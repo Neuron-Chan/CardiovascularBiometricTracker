@@ -1,332 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Query</title>
-    
-    <!-- ✅ Link CSS -->
-    <link rel="stylesheet" href="css/database.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Database Query</title>
 
-    <!-- ✅ Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-    
-        // ✅ Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCdlgneYba6TU5SyyFT3ZEz8DzO1_-hdAA",
-            authDomain: "ixmarket-login-register-fbase.firebaseapp.com",
-            projectId: "ixmarket-login-register-fbase",
-            storageBucket: "ixmarket-login-register-fbase.appspot.com",
-            messagingSenderId: "200593780997",
-            appId: "1:200593780997:web:40f4c31ce0ff3c8414c76c"
-        };
-    
-        // ✅ Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-    
-        // ✅ Fetch Available Fields from Firestore
-        async function fetchFields() {
-            const collectionName = document.getElementById("collection-select").value;
-            const querySnapshot = await getDocs(collection(db, collectionName));
-            
-            if (!querySnapshot.empty) {
-                const firstDoc = querySnapshot.docs[0].data();
-                const fieldsDropdowns = document.querySelectorAll(".field-select");
-                
-                fieldsDropdowns.forEach(dropdown => {
-                    dropdown.innerHTML = ""; // Clear previous options
-                    Object.keys(firstDoc).forEach(field => {
-                        if (field !== "arduino_timestamp") {
-                            let option = document.createElement("option");
-                            option.value = field;
-                            option.textContent = field;
-                            dropdown.appendChild(option);
-                        }
-                    });
-                });
-            }
-        }
-    
-        // ✅ Function to Add Query Sections (Order By, Where, Limit)
-        function addQuery(type) {
-            const queryContainer = document.getElementById("query-conditions");
-    
-            let queryElement = document.createElement("div");
-            queryElement.classList.add("query-box");
-    
-            if (type === "orderBy") {
-                queryElement.innerHTML = `
-                    <label>Order By:</label>
-                    <select class="field-select"></select>
-                    <select class="order-direction">
-                        <option value="asc">Ascending</option>
-                        <option value="desc">Descending</option>
-                    </select>
-                    <button onclick="removeQuery(this)">Remove</button>
-                `;
-            } else if (type === "where") {
-                queryElement.innerHTML = `
-                    <label>Where:</label>
-                    <select class="field-select"></select>
-                    <select class="operator-select">
-                        <option value="==">=</option>
-                        <option value=">">></option>
-                        <option value="<"><</option>
-                        <option value=">=">>=</option>
-                        <option value="<="><=</option>
-                    </select>
-                    <input type="text" class="value-input" placeholder="Enter value">
-                    <button onclick="removeQuery(this)">Remove</button>
-                `;
-            } else if (type === "limit") {
-                queryElement.innerHTML = `
-                    <label>Limit:</label>
-                    <input type="number" class="limit-input" min="1" placeholder="Enter number">
-                    <button onclick="removeQuery(this)">Remove</button>
-                `;
-            }
-    
-            queryContainer.appendChild(queryElement);
-            fetchFields(); // Update field dropdowns
-        }
-    
-        // ✅ Function to Remove Query Sections
-        function removeQuery(button) {
-            button.parentElement.remove();
-        }
-    
-        function formatToFirestoreTimestamp(dateString) {
-            if (!dateString) return null;
+  <link rel="stylesheet" href="css/database.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-            const date = new Date(dateString);
-
-            const pad = (n, len = 2) => n.toString().padStart(len, '0');
-            const year = date.getFullYear();
-            const month = pad(date.getMonth() + 1);
-            const day = pad(date.getDate());
-            const hour = pad(date.getHours());
-            const minute = pad(date.getMinutes());
-            const second = pad(date.getSeconds());
-
-            // Firestore stores nanoseconds — but we can just hardcode zeros
-            return `${year}-${month}-${day} ${hour}:${minute}:${second}.000000000`;
-        }
-
-
-        async function queryFirestore() {
-            const collectionName = document.getElementById("collection-select").value;
-            let q = query(collection(db, collectionName));
-
-            // ✅ Get date/time input and format
-            const fromDateInput = document.getElementById("fromDate").value;
-            const toDateInput = document.getElementById("toDate").value;
-
-            const fromTimestamp = formatToFirestoreTimestamp(fromDateInput);
-            const toTimestamp = formatToFirestoreTimestamp(toDateInput);
-
-            console.log("From timestamp:", fromTimestamp);
-            console.log("To timestamp:", toTimestamp);
-
-            // ✅ Apply string-based timestamp filters
-            if (fromTimestamp) {
-                q = query(q, where("timestamp", ">=", fromTimestamp));
-            }
-            if (toTimestamp) {
-                q = query(q, where("timestamp", "<=", toTimestamp));
-            }
-
-            // ✅ Required for Firestore range queries
-            q = query(q, orderBy("timestamp"));
-
-            try {
-                const querySnapshot = await getDocs(q);
-                let output = `<h3>Results for ${collectionName}</h3>`;
-
-                if (querySnapshot.empty) {
-                    output += "<p>No results found.</p>";
-                    document.getElementById("database-content").innerHTML = output;
-
-                    if (window.myChart) {
-                        window.myChart.destroy();
-                        window.myChart = null;
-                    }
-
-                    return;
-                }
-
-                // ✅ Define table columns per collection
-                let columns = [];
-                if (collectionName === "ecg_data") {
-                    columns = ["ecg_value", "timestamp"];
-                } else if (collectionName === "ppg_gravity_data") {
-                    columns = ["ppg_value", "timestamp"];
-                } else if (collectionName === "tmp102_data") {
-                    columns = ["temperature_c", "temperature_f", "timestamp"];
-                } else if (collectionName === "ppg_max_data") {
-                    columns = ["heart_rate", "timestamp"];
-                }
-
-                // ✅ Table Header
-                output += "<table><thead><tr>";
-                columns.forEach(col => {
-                    output += `<th>${col.replace("_", " ").toUpperCase()}</th>`;
-                });
-                output += "</tr></thead><tbody>";
-
-                // ✅ Data for chart
-                let labels = [];
-                let values = [];
-
-                let yField = columns.find(col =>
-                    col !== "timestamp" && col !== "temperature_f" && col !== "temperature_c"
-                );
-
-                if (collectionName === "tmp102_data") {
-                    yField = "temperature_f";
-                }
-
-                querySnapshot.forEach(doc => {
-                    let data = doc.data();
-
-                    output += "<tr>";
-                    columns.forEach(col => {
-                        output += `<td>${data[col] !== undefined ? data[col] : "N/A"}</td>`;
-                    });
-                    output += "</tr>";
-
-                    labels.push(data.timestamp); // Already a string
-                    values.push(data[yField]);
-                });
-
-                output += "</tbody></table>";
-                document.getElementById("database-content").innerHTML = output;
-
-                // ✅ Render chart
-                if (window.myChart) {
-                    window.myChart.destroy();
-                }
-
-                const ctx = document.getElementById("dataChart").getContext("2d");
-                window.myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: yField.replace("_", " ").toUpperCase(),
-                            data: values,
-                            borderWidth: 2,
-                            fill: false,
-                            tension: 0.3,
-                            borderColor: 'blue',
-                            pointRadius: 2
-                        }]
-                    },
-                    options: {
-                        responsive: false, // fixed chart size
-                        scales: {
-                            x: { title: { display: true, text: "Time" } },
-                            y: { title: { display: true, text: yField.replace("_", " ") } }
-                        },
-                        plugins: {
-                            legend: {
-                                display: true
-                            }
-                        }
-                    }
-                });
-
-            } catch (error) {
-                console.error("Error fetching Firestore data:", error);
-            }
-        }
-
-        
-            document.addEventListener("DOMContentLoaded", () => {
-                document.getElementById("collection-select").addEventListener("change", fetchFields);
-                document.getElementById("query-btn").addEventListener("click", queryFirestore);
-            });
-        
-            // ✅ EXPOSE FUNCTIONS TO WINDOW (Fixes "addQuery is not defined" error)
-            window.addQuery = addQuery;
-            window.removeQuery = removeQuery;
-        
-            // Redirect to login page if the user is not logged in
-            document.addEventListener("DOMContentLoaded", function () {
-                if (!localStorage.getItem("isLoggedIn")) {
-                    window.location.href = "index.html"; // Redirect if not logged in
-                } else {
-                    // Display the logged-in user's email or username
-                    const userEmail = localStorage.getItem("userEmail") || "User";
-                    document.getElementById("usernameDisplay").innerText = userEmail;
-                }
-            });
-
-            // Logout function
-            function logout() {
-                localStorage.removeItem("isLoggedIn");
-                localStorage.removeItem("userEmail");
-                window.location.href = "index.html"; // Redirect to homepage after logout
-            }
-        </script>
-    
-    
+  <!-- JS Logic -->
+  <script type="module" src="js/database.js"></script>
 </head>
 <body>
+  <header>
+    <div class="logo">
+      <a href="dashboard.html">
+        <img src="images/logo.png" alt="Logo" />
+      </a>
+      <span class="app-title">Cardiovascular Biometric Tracker</span>
+    </div>
+    <div class="user-controls">
+      <span id="usernameDisplay">User</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
 
-    <header>
-        <div class="logo">
-            <a href="dashboard.html">
-                <img src="images/logo.png" alt="Logo">
-            </a>
-            <span class="app-title">Cardiovascular Biometric Tracker</span>
-        </div>
-        <div class="user-controls">
-            <span id="usernameDisplay">User</span>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div> 
-    </header>
+  <main class="database-container">
+    <div class="top-section">
+      <div class="query-conditions">
+        <h1>Database Query</h1>
 
-    <main class="database-container">
-        <div class="top-section">
-            <!-- LEFT: Query Section -->
-            <div class="query-conditions">
-                <h1>Database Query</h1>
-    
-                <label for="collection-select">Collection:</label>
-                <select id="collection-select">
-                    <option value="ecg_data">ECG Data</option>
-                    <option value="ppg_gravity_data">PPG Data</option>
-                    <option value="ppg_max_data">Heart Rate Data</option>
-                    <option value="tmp102_data">Temperature Data</option>
-                </select>
-    
-                <label for="fromDate">From:</label>
-                <input type="datetime-local" id="fromDate">
-    
-                <label for="toDate">To:</label>
-                <input type="datetime-local" id="toDate">
-    
-                <button onclick="addQuery('orderBy')">Add Order By</button>
-                <button onclick="addQuery('limit')">Add Limit</button>
-    
-                <div id="query-conditions"></div>
-    
-                <button id="query-btn">Run Query</button>
-            </div>
-    
-            <!-- RIGHT: Results Table -->
-            <div id="database-content">Results will be displayed here...</div>
-        </div>
-    
-        <!-- BOTTOM: Chart -->
-        <canvas id="dataChart" width="1000" height="600" style="display: block; margin: 30px auto;"></canvas>
-    </main>
-    
+        <label for="collection-select">Collection:</label>
+        <select id="collection-select">
+          <option value="ecg_data">ECG Data</option>
+          <option value="ppg_gravity_data">PPG Data</option>
+          <option value="ppg_max_data">Heart Rate Data</option>
+          <option value="tmp102_data">Temperature Data</option>
+        </select>
 
+        <label for="fromDate">From:</label>
+        <input type="datetime-local" id="fromDate" />
+
+        <label for="toDate">To:</label>
+        <input type="datetime-local" id="toDate" />
+
+        <button onclick="addQuery('orderBy')">Add Order By</button>
+        <button onclick="addQuery('limit')">Add Limit</button>
+
+        <div id="query-conditions"></div>
+
+        <button id="query-btn">Run Query</button>
+      </div>
+
+      <div id="database-content">Results will be displayed here...</div>
+    </div>
+
+    <canvas id="dataChart" width="1000" height="600" style="display: block; margin: 30px auto;"></canvas>
+  </main>
 </body>
 </html>

@@ -1,7 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, limit, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-// ✅ Firebase Configuration (Original)
+// ✅ Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCdlgneYba6TU5SyyFT3ZEz8DzO1_-hdAA",
     authDomain: "ixmarket-login-register-fbase.firebaseapp.com",
@@ -14,22 +15,34 @@ const firebaseConfig = {
 // ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 // ✅ Redirect to Database Page on Button Click
 document.querySelector(".database-btn").addEventListener("click", () => {
     window.location.href = "database.html";
 });
 
-// ✅ Function to Fetch Latest Temperature Data
-async function fetchLatestTemperature() {
+// ✅ Start fetching once user is authenticated
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const uid = user.uid;
+        // Toggle between real-time or static
+        fetchLatestTemperatureRealtime(uid); // Real-time
+        // fetchLatestTemperature(uid); // Polling mode
+    } else {
+        console.error("User not signed in");
+    }
+});
+
+// ✅ Polling-Based: Fetch Latest Temperature (Once or Interval)
+async function fetchLatestTemperature(uid) {
     try {
-        const tempRef = collection(db, "tmp102_data");
+        const tempRef = collection(db, `users/${uid}/tmp102_data`);
         const q = query(tempRef, orderBy("timestamp", "desc"), limit(1));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
             const latestData = querySnapshot.docs[0].data();
-            console.log("Temperature Data Retrieved:", latestData);
 
             document.getElementById("temperatureC").innerText = latestData.temperature_c.toFixed(2);
             document.getElementById("temperatureF").innerText = latestData.temperature_f.toFixed(2);
@@ -44,19 +57,41 @@ async function fetchLatestTemperature() {
     }
 }
 
+// ✅ Real-Time Version
+function fetchLatestTemperatureRealtime(uid) {
+    const tempRef = collection(db, `users/${uid}/tmp102_data`);
+    const q = query(tempRef, orderBy("timestamp", "desc"), limit(1));
+
+    onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach(change => {
+            if (change.type === "added" || change.type === "modified") {
+                const data = change.doc.data();
+
+                document.getElementById("temperatureC").innerText = data.temperature_c.toFixed(2);
+                document.getElementById("temperatureF").innerText = data.temperature_f.toFixed(2);
+                document.getElementById("timestamp").innerText = data.timestamp;
+
+                updateChart(data.temperature_c);
+            }
+        });
+    }, (error) => {
+        console.error("Real-time temp error:", error);
+    });
+}
+
 // ✅ Initialize Chart.js Graph (No X-Axis Labels)
 const ctx = document.getElementById("temperatureChart").getContext("2d");
 const temperatureChart = new Chart(ctx, {
     type: "line",
     data: {
-        labels: [], // ✅ Keep labels empty to hide x-axis timestamps
+        labels: [],
         datasets: [{
-            label: "Live Temperature Data (°C)",
+            label: "Live Temperature Data (\u00b0C)",
             borderColor: "red",
             borderWidth: 2,
-            pointRadius: 0, // ✅ Remove dots/circles
+            pointRadius: 0,
             fill: false,
-            tension: 0.3, // ✅ Makes the graph smooth
+            tension: 0.3,
             data: []
         }]
     },
@@ -64,12 +99,10 @@ const temperatureChart = new Chart(ctx, {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-            x: { 
-                display: false // ✅ Hide the x-axis labels
-            },
+            x: { display: false },
             y: { 
                 display: true, 
-                title: { display: true, text: "Temperature (°C)" } 
+                title: { display: true, text: "Temperature (\u00b0C)" } 
             }
         }
     }
@@ -77,7 +110,7 @@ const temperatureChart = new Chart(ctx, {
 
 // ✅ Function to Update Chart
 function updateChart(tempC) {
-    temperatureChart.data.labels.push(""); // ✅ Keep x-axis empty
+    temperatureChart.data.labels.push("");
     temperatureChart.data.datasets[0].data.push(tempC);
 
     if (temperatureChart.data.labels.length > 20) {
@@ -87,6 +120,3 @@ function updateChart(tempC) {
 
     temperatureChart.update();
 }
-
-// ✅ Fetch Data Every 1 Second
-setInterval(fetchLatestTemperature, 1000);

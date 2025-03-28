@@ -148,6 +148,14 @@ canvas {
     width: 25%;
 }
 
+.sensor-value2 {
+    font-size: 48px;
+    font-weight: bold;
+    color: red;
+    text-align: center;
+    width: 25%;
+}
+
 /* ECG & PPG Box Adjustments */
 .ecg-box, .ppg-box {
     display: flex;

@@ -1,7 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-// ✅ Your Original Firebase Configuration
+// ✅ Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyCdlgneYba6TU5SyyFT3ZEz8DzO1_-hdAA",
     authDomain: "ixmarket-login-register-fbase.firebaseapp.com",
@@ -11,53 +12,97 @@ const firebaseConfig = {
     appId: "1:200593780997:web:40f4c31ce0ff3c8414c76c"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// ✅ Redirect to Database Page on Button Click
+// ✅ Redirect to Database Page
 document.querySelector(".database-btn").addEventListener("click", () => {
     window.location.href = "database.html";
 });
 
-// ✅ Function to Fetch Latest ECG Data from Firestore
-async function fetchLatestECG() {
+// ✅ Start Fetching Once User is Authenticated
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log("User is logged in:", user.uid);
+        const uid = user.uid;
+        startFetchingECG(uid);
+    } else {
+        console.error("User not signed in");
+    }
+});
+
+function startFetchingECG(uid) {
+    fetchLatestECGRealtime(uid);
+    setInterval(() => fetchLatestECGRealtime(uid), 210);
+}
+
+// ✅ Fetch Last 100 ECG Values (User-Specific)
+async function fetchLatestECG(uid) {
     try {
-        const colRef = collection(db, "ecg_data"); // Ensure collection name matches
-        const q = query(colRef, orderBy("timestamp", "desc"), limit(1));
+        const colRef = collection(db, `users/${uid}/ecg_data`);
+        const q = query(colRef, orderBy("timestamp", "desc"), limit(100));
         const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-            const latestData = querySnapshot.docs[0].data();
-            console.log("ECG Data Retrieved:", latestData);
+        const ecgValues = [];
 
-            // ✅ Get HTML elements safely
-            const ecgElement = document.getElementById("ecgValue");
-            const timestampElement = document.getElementById("timestamp");
-
-            if (ecgElement) {
-                ecgElement.innerText = latestData.ecg_value.toFixed(2); // Show ECG with 2 decimals
-            } else {
-                console.warn("Element with ID 'ecgValue' not found.");
+        querySnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.ecg_value !== undefined && data.ecg_value !== null) {
+                ecgValues.push(data.ecg_value);
             }
+        });
 
-            if (timestampElement) {
-                timestampElement.innerText = latestData.timestamp;
-            } else {
-                console.warn("Element with ID 'timestamp' not found.");
-            }
+        ecgValues.reverse();
 
-            // ✅ Update ECG Graph
-            updateECGChart(latestData.ecg_value);
-        } else {
-            console.warn("No ECG data found in Firestore.");
+        ecgChart.data.datasets[0].data = ecgValues;
+        ecgChart.data.labels = ecgValues.map(() => "");
+        ecgChart.update();
+
+        const latestValue = ecgValues[ecgValues.length - 1];
+        const ecgElement = document.getElementById("ecgValue");
+        const timestampElement = document.getElementById("timestamp");
+
+        if (ecgElement) {
+            ecgElement.innerText = latestValue?.toFixed(2) ?? "--";
         }
+
+        if (timestampElement) {
+            const latestDoc = querySnapshot.docs[0];
+            timestampElement.innerText = latestDoc?.data().timestamp ?? "--";
+        }
+
     } catch (error) {
         console.error("Error fetching ECG data:", error);
     }
 }
 
-// ✅ ECG Graph Initialization (Smooth Display)
+function fetchLatestECGRealtime(uid) {
+    const colRef = collection(db, `users/${uid}/ecg_data`);
+    const q = query(colRef, orderBy("timestamp", "desc"), limit(1)); // Latest doc only
+
+    onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach(change => {
+            if (change.type === "added" || change.type === "modified") {
+                const data = change.doc.data();
+
+                if (data.ecg_value !== undefined && data.ecg_value !== null) {
+                    updateECGChart(data.ecg_value);
+
+                    const ecgElement = document.getElementById("ecgValue");
+                    const timestampElement = document.getElementById("timestamp");
+
+                    if (ecgElement) ecgElement.innerText = data.ecg_value.toFixed(2);
+                    if (timestampElement) timestampElement.innerText = data.timestamp ?? "--";
+                }
+            }
+        });
+    }, (error) => {
+        console.error("Error in real-time ECG listener:", error);
+    });
+}
+
+// ✅ ECG Chart Setup
 const ctx = document.getElementById("ecgChart").getContext("2d");
 const ecgChart = new Chart(ctx, {
     type: "line",
@@ -71,7 +116,7 @@ const ecgChart = new Chart(ctx, {
             borderWidth: 1.5,
             cubicInterpolationMode: "monotone",
             fill: false,
-            pointRadius: 0, // ✅ Removes Circles
+            pointRadius: 0,
             pointHoverRadius: 0
         }]
     },
@@ -79,9 +124,7 @@ const ecgChart = new Chart(ctx, {
         responsive: true,
         animation: false,
         elements: {
-            line: {
-                tension: 0.4
-            }
+            line: { tension: 0.4 }
         },
         scales: {
             x: {
@@ -94,7 +137,7 @@ const ecgChart = new Chart(ctx, {
                 }
             },
             y: {
-                min: 0, // Adjusted for ECG range
+                min: 0,
                 max: 4.5,
                 grid: { color: "rgba(0, 0, 0, 0.1)" },
                 title: {
@@ -110,12 +153,11 @@ const ecgChart = new Chart(ctx, {
     }
 });
 
-// ✅ Function to Update the ECG Graph
+// ✅ Update ECG Graph
 function updateECGChart(ecg_value) {
-    ecgChart.data.datasets[0].data.unshift(ecg_value); // Add new data to the left
-
+    ecgChart.data.datasets[0].data.unshift(ecg_value);
     if (ecgChart.data.datasets[0].data.length > 100) {
-        ecgChart.data.datasets[0].data.pop(); // Keep only last 100 points
+        ecgChart.data.datasets[0].data.pop();
     }
 
     ecgChart.data.labels.unshift("");
@@ -125,6 +167,3 @@ function updateECGChart(ecg_value) {
 
     ecgChart.update();
 }
-
-// ✅ Fetch ECG Data Every 0.21 Seconds
-setInterval(fetchLatestECG, 210);

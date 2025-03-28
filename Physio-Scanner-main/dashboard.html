@@ -1,397 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Cardiovascular Tracker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Cardiovascular Tracker</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
 
-    <link rel="stylesheet" href="css/dashboard.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
-    <script>
-        // Redirect to login page if the user is not logged in
-        document.addEventListener("DOMContentLoaded", function () {
-            if (!localStorage.getItem("isLoggedIn")) {
-                window.location.href = "index.html"; // Redirect if not logged in
-            } else {
-                // Display the logged-in user's email or username
-                const userEmail = localStorage.getItem("userEmail") || "User";
-                document.getElementById("usernameDisplay").innerText = userEmail;
-            }
-        });
-
-        // Logout function
-        function logout() {
-            localStorage.removeItem("isLoggedIn");
-            localStorage.removeItem("userEmail");
-            window.location.href = "index.html"; // Redirect to homepage after logout
-        }
-    </script>
-
-    <!-- ✅ Firebase from CDN -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-
-        // ✅ Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCdlgneYba6TU5SyyFT3ZEz8DzO1_-hdAA",
-            authDomain: "ixmarket-login-register-fbase.firebaseapp.com",
-            projectId: "ixmarket-login-register-fbase",
-            storageBucket: "ixmarket-login-register-fbase.appspot.com",
-            messagingSenderId: "200593780997",
-            appId: "1:200593780997:web:40f4c31ce0ff3c8414c76c"
-        };
-
-        // ✅ Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-
-        /* ✅ Ensure the Canvas Exists */
-        document.addEventListener("DOMContentLoaded", () => {
-            if (!document.getElementById("ppgDashboardChart")) {
-                console.error("PPG Chart canvas not found!");
-                return;
-            }
-            createPPGChart();
-        });
-
-        /* ✅ Fetch Latest ECG Data */
-        async function fetchLatestECG() {
-            try {
-                const colRef = collection(db, "ecg_data");
-                const q = query(colRef, orderBy("timestamp", "desc"), limit(1));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    const latestData = querySnapshot.docs[0].data();
-                    updateECGChart(latestData.ecg_value);
-                    document.getElementById("dashboardECGValue").innerText = latestData.ecg_value.toFixed(2) + " V";
-                }
-            } catch (error) {
-                console.error("❌ Error fetching ECG data:", error);
-            }
-        }
-
-        /* ✅ Function to Fetch PPG Data (for Graph & Value) */
-        async function fetchLatestPPG() {
-            try {
-                const colRef = collection(db, "ppg_gravity_data"); // Ensure correct collection
-                const q = query(colRef, orderBy("timestamp", "desc"), limit(1)); // Fetch latest entry
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    const latestData = querySnapshot.docs[0].data();
-
-                    // ✅ Update PPG Value Display
-                    document.getElementById("ppgValue").innerText =
-                        latestData.ppg_value !== undefined && latestData.ppg_value !== null
-                            ? latestData.ppg_value
-                            : "--";
-
-
-                    // ✅ Update PPG Graph
-                    updatePPGChart(latestData.ppg_value);
-                }
-            } catch (error) {
-                console.error("Error fetching PPG data:", error);
-            }
-        }
-
-        /* ✅ Fetch Latest Temperature */
-        async function fetchLatestTemperature() {
-            try {
-                const colRef = collection(db, "tmp102_data");
-                const q = query(colRef, orderBy("timestamp", "desc"), limit(1));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    const latestData = querySnapshot.docs[0].data();
-                    document.getElementById("dashboardTemperature").innerText = latestData.temperature_c.toFixed(2) + "°C";
-                }
-            } catch (error) {
-                console.error("❌ Error fetching Temperature data:", error);
-            }
-        }
-
-        /* ✅ Function to Fetch the Latest Non-Zero Heart Rate Value */
-        async function fetchLatestHeartRate() {
-            try {
-                const colRef = collection(db, "ppg_max_data");
-                const q = query(colRef, orderBy("timestamp", "desc"), limit(10));
-                const querySnapshot = await getDocs(q);
-
-                console.log("Heart Rate Query Snapshot:", querySnapshot.docs.map(doc => doc.data())); // Debugging
-
-                let latestValidHeartRate = "--";
-                let latestValidTimestamp = "--";
-
-                for (const doc of querySnapshot.docs) {
-                    const data = doc.data();
-                    if (data.heart_rate && data.heart_rate > 0) {
-                        latestValidHeartRate = data.heart_rate;
-                        latestValidTimestamp = data.timestamp;
-                        break;
-                    }
-                }
-
-                document.getElementById("dashboardHeartRate").innerText =
-                    latestValidHeartRate !== "--" ? `${latestValidHeartRate} BPM` : "--";
-
-
-                document.getElementById("timestamp").innerText = latestValidTimestamp;
-
-            } catch (error) {
-                console.error("Error fetching Heart Rate data:", error);
-            }
-        }
-
-        /* ✅ ECG Graph Initialization */
-        let ecgChart;
-        function createECGChart() {
-            const ctx = document.getElementById("ecgDashboardChart").getContext("2d");
-            ecgChart = new Chart(ctx, {
-                type: "line",
-                data: {
-                    labels: Array(100).fill(""),
-                    datasets: [{
-                        label: "Live ECG Data",
-                        borderColor: "red",
-                        backgroundColor: "rgba(255, 0, 0, 0.1)",
-                        data: Array(100).fill(0),
-                        borderWidth: 1.5,
-                        cubicInterpolationMode: "monotone",
-                        fill: false,
-                        pointRadius: 0,
-                        pointHoverRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    animation: false,
-                    maintainAspectRatio: false,
-                    elements: {
-                        line: { tension: 0.4 }
-                    },
-                    scales: {
-                        x: { display: true, title: { display: true, text: "Time", color: "#333" } },
-                        y: { min: 0, max: 4, title: { display: true, text: "ECG Voltage (V)", color: "#333" } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-
-        /* ✅ Function to Update ECG Chart */
-        function updateECGChart(ecg_value) {
-            ecgChart.data.datasets[0].data.unshift(ecg_value);
-            if (ecgChart.data.datasets[0].data.length > 100) {
-                ecgChart.data.datasets[0].data.pop();
-            }
-
-            ecgChart.data.labels.unshift("");
-            if (ecgChart.data.labels.length > 100) {
-                ecgChart.data.labels.pop();
-            }
-
-            ecgChart.update();
-        }
-
-        /* ✅ PPG Graph Initialization */
-        let ppgChart;
-        function createPPGChart() {
-            const ctx = document.getElementById("ppgDashboardChart").getContext("2d");
-            ppgChart = new Chart(ctx, {
-                type: "line",
-                data: {
-                    labels: Array(100).fill(""),
-                    datasets: [{
-                        label: "Live PPG Data",
-                        borderColor: "blue",
-                        backgroundColor: "rgba(0, 0, 255, 0.1)",
-                        data: Array(100).fill(300),
-                        borderWidth: 1.5,
-                        cubicInterpolationMode: "monotone",
-                        fill: false,
-                        pointRadius: 0,
-                        pointHoverRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    animation: false,
-                    maintainAspectRatio: false,
-                    elements: {
-                        line: { tension: 0.4 }
-                    },
-                    scales: {
-                        x: { display: true, title: { display: true, text: "Time", color: "#333" } },
-                        y: { min: 200, max: 1000, title: { display: true, text: "PPG Value", color: "#333" } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-
-        /* ✅ Function to Update the PPG Graph */
-        function updatePPGChart(ppg_value) {
-            if (!ppgChart) return;
-            ppgChart.data.datasets[0].data.unshift(ppg_value); 
-
-            // Keep only the last 100 points for a smoother graph
-            if (ppgChart.data.datasets[0].data.length > 100) {
-                ppgChart.data.datasets[0].data.pop();
-            }
-
-            // Shift labels accordingly
-            ppgChart.data.labels.unshift("");
-            if (ppgChart.data.labels.length > 100) {
-                ppgChart.data.labels.pop();
-            }
-
-            // Update the graph
-            ppgChart.update();
-        }
-
-        /* ✅ Ensure All Data Updates Every 0.21-1 Seconds */
-        document.addEventListener("DOMContentLoaded", () => {
-            createECGChart();
-            setInterval(fetchLatestECG, 210);
-            setInterval(fetchLatestPPG, 210);
-            setInterval(fetchLatestTemperature, 1000);
-            setInterval(fetchLatestHeartRate, 1000);
-        });
-
-    </script>
-
-    <style>
-        /* ✅ Fix ECG Box Layout */
-        .ecg-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-        }
-
-        .ecg-graph {
-            width: 75%;
-        }
-
-        .sensor-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: red;
-            text-align: justify;
-            width: 20%;
-        }
-
-        .sensor-value2 {
-            white-space: nowrap;
-            display: inline-block;
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: red;
-        }
-
-        
-        /* ✅ Ensure PPG Graph Displays Properly */
-        .ppg-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-        }
-
-        .ppg-graph {
-            width: 75%;
-            text-align: left;
-        }
-
-        .ppg-value-box {
-            width: 25%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #ppgDashboardChart {
-            width: 100% !important;
-            height: 220px !important;
-        }
-
-        #ppgValue {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: red;
-            text-align: justify;
-        }
-    </style>
+  <!-- JS Logic -->
+  <script type="module" src="js/dashboard.js"></script>
 </head>
 <body>
+  <header>
+    <div class="logo">
+      <a href="dashboard.html">
+        <img src="images/logo.png" alt="Logo" />
+      </a>
+      <span class="app-title">Cardiovascular Biometric Tracker</span>
+    </div>
+    <div class="user-controls">
+      <span id="usernameDisplay">User</span>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+  </header>
 
-    <header>
-        <div class="logo">
-            <a href="dashboard.html">
-                <img src="images/logo.png" alt="Logo">
-            </a>
-            <span class="app-title">Cardiovascular Biometric Tracker</span>
+  <div class="sensor-values">
+    <button class="sensor-btn" onclick="location.href='ecg.html'">ECG</button>
+    <button class="sensor-btn" onclick="location.href='ppg.html'">PPG</button>
+    <button class="sensor-btn" onclick="location.href='temperature.html'">Temperature</button>
+  </div>
+
+  <main class="dashboard-container">
+    <!-- Left (Graphs) -->
+    <div class="left-side">
+      <div class="sensor-box large-box ecg-box">
+        <div class="ecg-graph">
+          <h2>ECG Signal</h2>
+          <canvas id="ecgDashboardChart"></canvas>
         </div>
-        <div class="user-controls">
-            <span id="usernameDisplay">User</span>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>             
-    </header>
+        <span class="sensor-value" id="dashboardECGValue">-- V</span>
+      </div>
 
-    <!-- ✅ Sensor Navigation -->
-    <div class="sensor-values">
-        <button class="sensor-btn" onclick="location.href='ecg.html'">ECG</button>
-        <button class="sensor-btn" onclick="location.href='ppg.html'">PPG</button>
-        <button class="sensor-btn" onclick="location.href='temperature.html'">Temperature</button>
+      <div class="sensor-box large-box ppg-box">
+        <div class="ppg-graph">
+          <h2>PPG Signal</h2>
+          <canvas id="ppgDashboardChart"></canvas>
+        </div>
+        <span class="sensor-value" id="ppgValue">--</span>
+      </div>
     </div>
 
-    <!-- ✅ Dashboard Layout -->
-    <main class="dashboard-container">
-        
-        <!-- Left Side (Graphs) -->
-        <div class="left-side">
-            <!-- ✅ ECG Box with Value on Right Side -->
-            <div class="sensor-box large-box ecg-box">
-                <div class="ecg-graph">
-                    <h2>ECG Signal</h2>
-                    <canvas id="ecgDashboardChart"></canvas>
-                </div>
-                <span class="sensor-value" id="dashboardECGValue">-- V</span>
-            </div>
-            <!-- ✅ PPG Box with Graph and Value -->
-            <div class="sensor-box large-box ppg-box">
-                <div class="ppg-graph">
-                    <h2>PPG Signal</h2>
-                    <canvas id="ppgDashboardChart"></canvas>
-                </div>
-                <span class="sensor-value" id="ppgValue">--</span>
-            </div>
-        </div>
+    <!-- Right (Values) -->
+    <div class="right-side">
+      <div class="sensor-box small-box">
+        <h2>Temperature</h2>
+        <span class="sensor-value" id="dashboardTemperature">-- °C</span>
+      </div>
 
-        <!-- Right Side (Temperature & Heart Rate Values) -->
-        <div class="right-side">
-            <div class="sensor-box small-box">
-                <h2>Temperature</h2>
-                <span class="sensor-value" id="dashboardTemperature"> °C</span>
-            </div>
-
-            <div class="sensor-box small-box">
-                <h2>Heart Rate</h2>
-                <span class="sensor-value2" id="dashboardHeartRate">--</span>
-            </div>
-        </div>
-
-    </main>
-
+      <div class="sensor-box small-box">
+        <h2>Heart Rate</h2>
+        <span class="sensor-value2" id="dashboardHeartRate">-- BPM</span>
+      </div>
+    </div>
+  </main>
 </body>
 </html>

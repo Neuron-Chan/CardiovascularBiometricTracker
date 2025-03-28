@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
 // ✅ Firebase Configuration
 const firebaseConfig = {
@@ -14,65 +15,102 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 // ✅ Redirect to Database Page on Button Click
 document.querySelector(".database-btn").addEventListener("click", () => {
     window.location.href = "database.html";
 });
 
-/* ✅ Function to Fetch PPG Data (for Graph & Value) */
-async function fetchLatestPPG() {
+// ✅ Start fetching once user is authenticated
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log("User is logged in: ", user.uid);
+        const uid = user.uid;
+        startFetchingUserData(uid);
+    } else {
+        console.error("User not signed in");
+    }
+});
+
+function startFetchingUserData(uid) {
+    fetchLatestPPG(uid);
+    fetchLatestHeartRate(uid);
+
+    setInterval(() => fetchLatestPPG(uid), 210);
+    setInterval(() => fetchLatestHeartRate(uid), 1000);
+}
+
+function fetchLatestPPG(uid) {
+    const colRef = collection(db, `users/${uid}/ppg_gravity_data`);
+    const q = query(colRef, orderBy("timestamp", "desc"), limit(1)); // Listen to latest ppg_value
+
+    onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach(change => {
+            if (change.type === "added" || change.type === "modified") {
+                const data = change.doc.data();
+
+                if (data.ppg_value !== undefined && data.ppg_value !== null) {
+                    updatePPGChart(data.ppg_value);
+                    document.getElementById("ppgValue").innerText = data.ppg_value;
+                    document.getElementById("timestamp").innerText = data.timestamp ?? "--";
+                }
+            }
+        });
+    }, (error) => {
+        console.error("Error in real-time PPG listener:", error);
+    });
+}
+
+/* ✅ Function to Fetch the Last 100 PPG Values and Update Graph */
+/*async function fetchLatestPPG(uid) {
     try {
-        const colRef = collection(db, "ppg_gravity_data");
+        const colRef = collection(db, `users/${uid}/ppg_gravity_data`);
+        const q = query(colRef, orderBy("timestamp", "desc"), limit(100));
+        const querySnapshot = await getDocs(q);
+
+        const ppgValues = [];
+
+        querySnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.ppg_value !== undefined && data.ppg_value !== null) {
+                ppgValues.push(data.ppg_value);
+            }
+        });
+
+        ppgValues.reverse();
+
+        ppgChart.data.datasets[0].data = ppgValues;
+        ppgChart.data.labels = ppgValues.map(() => "");
+        ppgChart.update();
+
+        const latestValue = ppgValues[ppgValues.length - 1];
+        document.getElementById("ppgValue").innerText = latestValue ?? "--";
+
+    } catch (error) {
+        console.error("Error fetching PPG data:", error);
+    }
+} 
+*/
+
+/* ✅ Function to Fetch the Latest Non-Zero Heart Rate Data */
+async function fetchLatestHeartRate(uid) {
+    try {
+        const colRef = collection(db, `users/${uid}/ppg_max_data`);
         const q = query(colRef, orderBy("timestamp", "desc"), limit(1));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
             const latestData = querySnapshot.docs[0].data();
 
-            document.getElementById("ppgValue").innerText =
-                latestData.ppg_value !== undefined && latestData.ppg_value !== null
-                    ? latestData.ppg_value
-                    : "--";
+            const heartRate = latestData.heart_rate;
+            const timestamp = latestData.timestamp;
 
-            // ✅ Update timestamp
-            document.getElementById("timestamp").innerText =
-                latestData.timestamp ?? "--";
+            document.getElementById("heartRateValue").innerText =
+                typeof heartRate === "number" ? heartRate : "--";
 
-            updatePPGChart(latestData.ppg_value);
+            document.getElementById("timestamp").innerText = timestamp ?? "--";
         }
-    } catch (error) {
-        console.error("Error fetching PPG data:", error);
-    }
-}
-
-
-/* ✅ Function to Fetch the Latest Non-Zero Heart Rate Data */
-async function fetchLatestHeartRate() {
-    try {
-        const colRef = collection(db, "ppg_max_data"); // Ensure correct collection
-        const q = query(colRef, orderBy("timestamp", "desc"), limit(10)); // Fetch latest 10 entries
-        const querySnapshot = await getDocs(q);
-
-        let latestValidHeartRate = "--"; // Default placeholder
-        let latestValidTimestamp = "--";
-
-        for (const doc of querySnapshot.docs) { // Loop through latest entries
-            const data = doc.data();
-            if (data.heart_rate && data.heart_rate > 0) { // ✅ Ensure non-zero value
-                latestValidHeartRate = data.heart_rate;
-                latestValidTimestamp = data.timestamp;
-                break; // Stop at the first latest valid non-zero value
-            }
-        }
-
-        // ✅ Update Heart Rate Display (Only Latest Non-Zero)
-        document.getElementById("heartRateValue").innerText = latestValidHeartRate;
-            latestData.latestValidHeartRate !== undefined && latestData.latestValidHeartRate !== null
-            ? latestData.latestValidHeartRate
-            : "--";
-
-        document.getElementById("timestamp").innerText = latestValidTimestamp;
 
     } catch (error) {
         console.error("Error fetching Heart Rate data:", error);
@@ -84,12 +122,12 @@ const ctx = document.getElementById("ppgChart").getContext("2d");
 const ppgChart = new Chart(ctx, {
     type: "line",
     data: {
-        labels: Array(100).fill(""), // Smoother graph with more points
+        labels: Array(100).fill(""),
         datasets: [{
             label: "Live PPG Data",
             borderColor: "blue",
-            backgroundColor: "rgba(0, 0, 255, 0.1)", 
-            data: Array(100).fill(300), // Placeholder data
+            backgroundColor: "rgba(0, 0, 255, 0.1)",
+            data: Array(100).fill(300),
             borderWidth: 1.5,
             cubicInterpolationMode: "monotone",
             fill: false,
@@ -116,7 +154,7 @@ const ppgChart = new Chart(ctx, {
                 }
             },
             y: {
-                min: 200,
+                min: 0,
                 max: 1000,
                 grid: { color: "rgba(0, 0, 0, 0.1)" },
                 title: {
@@ -134,23 +172,16 @@ const ppgChart = new Chart(ctx, {
 
 /* ✅ Function to Update the PPG Graph */
 function updatePPGChart(ppg_value) {
-    ppgChart.data.datasets[0].data.unshift(ppg_value); 
+    ppgChart.data.datasets[0].data.unshift(ppg_value);
 
-    // Keep only the last 100 points for a smoother graph
     if (ppgChart.data.datasets[0].data.length > 100) {
         ppgChart.data.datasets[0].data.pop();
     }
 
-    // Shift labels accordingly
     ppgChart.data.labels.unshift("");
     if (ppgChart.data.labels.length > 100) {
         ppgChart.data.labels.pop();
     }
 
-    // Update the graph
     ppgChart.update();
 }
-
-/* ✅ Fetch PPG & Heart Rate Separately (Without Interfering) */
-setInterval(fetchLatestPPG, 1000);  // Fetch PPG every 0.21s
-setInterval(fetchLatestHeartRate, 1000);  // Fetch Heart Rate every 1s
