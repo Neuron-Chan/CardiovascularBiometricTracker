@@ -43,6 +43,8 @@ function startFetching(uid) {
   setInterval(() => fetchLatestPPG(uid), 210);
   setInterval(() => fetchLatestTemperature(uid), 1000);
   setInterval(() => fetchLatestHeartRate(uid), 1000);
+  setInterval(() => fetchLatestSpO2(uid), 1000);
+  setInterval(() => fetchLatestConfidence(uid), 1000);
 }
 
 // ECG Fetch
@@ -82,8 +84,8 @@ async function fetchLatestPPG(uid) {
     const ppgValues = [];
     querySnapshot.forEach(doc => {
       const data = doc.data();
-      if (data.ppg_value !== undefined && data.ppg_value !== null) {
-        ppgValues.push(data.ppg_value);
+      if (data.value !== undefined && data.value !== null) {
+        ppgValues.push(data.value);
       }
     });
 
@@ -131,6 +133,41 @@ async function fetchLatestHeartRate(uid) {
     console.error("Heart rate fetch error:", error);
   }
 }
+
+// SpO2 Fetch
+async function fetchLatestSpO2(uid) {
+  try {
+    const colRef = collection(db, `users/${uid}/ppg_max_data`);
+    const q = query(colRef, orderBy("timestamp", "desc"), limit(1));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const data = querySnapshot.docs[0].data();
+      const spo2 = typeof data.oxygen === "number" ? data.oxygen : "--";
+      document.getElementById("dashboardSpO2").innerText = `${spo2} %`;
+    }
+  } catch (error) {
+    console.error("SpO2 fetch error:", error);
+  }
+}
+
+// Confidence Fetch
+async function fetchLatestConfidence(uid) {
+  try {
+    const colRef = collection(db, `users/${uid}/ppg_max_data`);
+    const q = query(colRef, orderBy("timestamp", "desc"), limit(1));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const data = querySnapshot.docs[0].data();
+      const confidence = typeof data.confidence === "number" ? data.confidence : "--";
+      document.getElementById("dashboardConfidence").innerText = `${confidence} %`;
+    }
+  } catch (error) {
+    console.error("Confidence fetch error:", error);
+  }
+}
+
 
 // Chart Initialization
 let ecgChart, ppgChart;

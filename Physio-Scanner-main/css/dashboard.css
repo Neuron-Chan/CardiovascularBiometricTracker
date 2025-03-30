@@ -5,11 +5,36 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-}
-
-/* ✅ Logout Button */
-.logout-btn {
-    background: #D32F2F; /* Red background */
+  }
+  
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: #37474F;
+    color: white;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo img {
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .app-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  /* Logout Button */
+  .logout-btn {
+    background: #D32F2F;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -18,46 +43,21 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.logout-btn:hover {
+  }
+  
+  .logout-btn:hover {
     background: #b71c1c;
     transform: scale(1.05);
-}
-
-/* ✅ Header */
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-    background: #37474F;
-    color: white;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-}
-
-.logo img {
-    height: 40px;
-    margin-right: 10px;
-}
-
-.app-title {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-/* Sensor Navigation */
-.sensor-values {
+  }
+  
+  /* Sensor Navigation */
+  .sensor-values {
     display: flex;
     justify-content: center;
     margin-top: 10px;
-}
-
-.sensor-btn {
+  }
+  
+  .sensor-btn {
     background: #03A9F4;
     color: white;
     border: none;
@@ -66,132 +66,157 @@ header {
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
-}
-
-.sensor-btn:hover {
+  }
+  
+  .sensor-btn:hover {
     background: #0288D1;
-}
-
-/* ✅ Dashboard Layout */
+  }
+  
+  /* Layout */
+  /* Layout Fix */
 .dashboard-container {
-    display: grid;
-    grid-template-columns: 2fr 1fr; /* Left (Graphs) - Right (Values) */
-    gap: 60px; /* ✅ Increased spacing between squares */
-    width: 90%;
-    margin: 30px auto;
-}
-
-/* Left Side (ECG & PPG Graphs) */
-.left-side {
     display: flex;
     flex-direction: column;
-    gap: 0px; /* ✅ Increased space between ECG & PPG boxes */
-}
-
-/* Right Side (Temperature & Heart Rate Values) */
-.right-side {
-    display: flex;
-    flex-direction: column;
-    gap: 0px; /* ✅ Increased space between Temperature & Heart Rate boxes */
-}
-
-/* Large Sensor Boxes (For Graphs) */
-.large-box {
-    background: white;
+    gap: 25px;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    height: 300px;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .row {
     display: flex;
-    flex-direction: column;
-    align-items: right;
-    justify-content: right;
-}
-
-/* Small Sensor Boxes (For Values) */
-.small-box {
+    width: 100%;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+  }
+  
+  /* Shorter and proportional layout */
+  .large-box {
+    flex: 0 0 55%;
     background: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    height: 300px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-}
-
-/* ✅ Proper Spacing Fix */
-.large-box + .large-box {
-    margin-top: 20px; /* Increased margin for more spacing */
-}
-
-.small-box + .small-box {
-    margin-top: 20px; /* Increased margin for more spacing */
-}
-
-/* Graph Styling */
-canvas {
-    width: 100% !important;
-    height: 220px !important;
-    align-items: left;
-}
-
-/* Sensor Values Positioned Right */
-.sensor-value {
-    font-size: 48px;
-    font-weight: bold;
-    color: red;
-    text-align: right;
-    width: 25%;
-}
-
-.sensor-value2 {
-    font-size: 48px;
-    font-weight: bold;
-    color: red;
-    text-align: center;
-    width: 25%;
-}
-
-/* ECG & PPG Box Adjustments */
-.ecg-box, .ppg-box {
+  }
+  
+  /* Thinner small boxes */
+  .small-box {
+    flex: 0 0 19%;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  /* Chart Canvas Sizing */
+  canvas {
+    width: 100% !important;
+    height: 180px !important;
+  }
+  
+  /* Sensor Readout Styles */
+  .sensor-value,
+  .sensor-value2 {
+    font-size: 36px;
+    font-weight: bold;
+    color: red;
+    margin-top: 10px;
+  }
+  
+  /* Header + Buttons (same as before) */
+  header {
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px;
-}
-
-.ecg-graph, .ppg-graph {
-    width: 75%;
-    text-align: left;
-}
-
-/* .ecg-value-box, .ppg-value-box {
-    width: 25%;
+    padding: 15px 20px;
+    background: #37474F;
+    color: white;
+  }
+  
+  .logo {
     display: flex;
-    align-items: right;
+    align-items: center;
+  }
+  
+  .logo img {
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .app-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .logout-btn {
+    background: #D32F2F;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .logout-btn:hover {
+    background: #b71c1c;
+    transform: scale(1.05);
+  }
+  
+  .sensor-values {
+    display: flex;
     justify-content: center;
-} */
-
-/* Center the Titles in ECG and PPG Boxes */
-.ecg-box h2, .ppg-box h2 {
-    text-align: center;
-    width: 100%;
-}
-
-.sign-in {
-    background-color: #915656;
+    margin-top: 10px;
+  }
+  
+  .sensor-btn {
+    background: #03A9F4;
     color: white;
     border: none;
     padding: 8px 15px;
-    cursor: pointer;
+    margin: 5px;
     border-radius: 5px;
-}
-
-.sign-in:hover {
-    background-color: #7a4747;
-}
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .sensor-btn:hover {
+    background: #0288D1;
+  }
+  
+  /* Responsive Fix */
+  @media (max-width: 1200px) {
+    .row {
+      flex-wrap: wrap;
+    }
+  
+    .large-box,
+    .small-box {
+      flex: 1 1 100%;
+    }
+  
+    .small-box {
+      max-width: 100%;
+    }
+  }
+  
+  .sensor-box[onclick] {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .sensor-box[onclick]:hover {
+    transform: scale(1.02);
+  }
+  

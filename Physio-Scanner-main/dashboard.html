@@ -28,45 +28,58 @@
       <button class="logout-btn" id="logoutBtn">Logout</button>
     </div>
   </header>
-
-  <div class="sensor-values">
-    <button class="sensor-btn" onclick="location.href='ecg.html'">ECG</button>
-    <button class="sensor-btn" onclick="location.href='ppg.html'">PPG</button>
-    <button class="sensor-btn" onclick="location.href='temperature.html'">Temperature</button>
-  </div>
+  
 
   <main class="dashboard-container">
-    <!-- Left (Graphs) -->
-    <div class="left-side">
-      <div class="sensor-box large-box ecg-box">
+    <!-- First Row -->
+    <div class="row">
+      <!-- ECG Graph -->
+      <div class="sensor-box large-box ecg-box" onclick="location.href='ecg.html'" style="cursor: pointer;">
         <div class="ecg-graph">
           <h2>ECG Signal</h2>
           <canvas id="ecgDashboardChart"></canvas>
         </div>
         <span class="sensor-value" id="dashboardECGValue">-- V</span>
       </div>
-
-      <div class="sensor-box large-box ppg-box">
+  
+      <!-- SpO2 -->
+      <div class="sensor-box small-box">
+        <h2>SpO₂</h2>
+        <span class="sensor-value" id="dashboardSpO2">-- %</span>
+      </div>
+  
+      <!-- Temperature -->
+      <div class="sensor-box small-box" onclick="location.href='temperature.html'" style="cursor: pointer;">
+        <h2>Temperature</h2>
+        <span class="sensor-value" id="dashboardTemperature">-- °C</span>
+      </div>
+    </div>
+  
+    <!-- Second Row -->
+    <div class="row">
+      <!-- PPG Graph -->
+      <div class="sensor-box large-box ppg-box" onclick="location.href='ppg.html'" style="cursor: pointer;">
         <div class="ppg-graph">
           <h2>PPG Signal</h2>
           <canvas id="ppgDashboardChart"></canvas>
         </div>
         <span class="sensor-value" id="ppgValue">--</span>
       </div>
-    </div>
-
-    <!-- Right (Values) -->
-    <div class="right-side">
+  
+      <!-- Confidence -->
       <div class="sensor-box small-box">
-        <h2>Temperature</h2>
-        <span class="sensor-value" id="dashboardTemperature">-- °C</span>
+        <h2>Confidence</h2>
+        <span class="sensor-value" id="dashboardConfidence">-- %</span>
       </div>
-
-      <div class="sensor-box small-box">
+  
+      <!-- Heart Rate -->
+      <div class="sensor-box small-box" onclick="location.href='ppg.html'" style="cursor: pointer;">
         <h2>Heart Rate</h2>
         <span class="sensor-value2" id="dashboardHeartRate">-- BPM</span>
       </div>
     </div>
   </main>
+  
+  
 </body>
 </html>
