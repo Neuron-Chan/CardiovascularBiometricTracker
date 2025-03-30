@@ -68,7 +68,8 @@ async function fetchLatestECG(uid) {
     ecgChart.update();
 
     const latestValue = ecgValues[ecgValues.length - 1];
-    document.getElementById("dashboardECGValue").innerText = latestValue?.toFixed(2) ?? "--";
+    document.getElementById("dashboardECGValue").innerText = latestValue !== undefined ? `${latestValue.toFixed(2)} V` : "--";
+
   } catch (error) {
     console.error("ECG fetch error:", error);
   }
@@ -127,7 +128,7 @@ async function fetchLatestHeartRate(uid) {
     if (!querySnapshot.empty) {
       const data = querySnapshot.docs[0].data();
       const hr = typeof data.heart_rate === "number" ? data.heart_rate : "--";
-      document.getElementById("dashboardHeartRate").innerText = hr;
+      document.getElementById("dashboardHeartRate").innerText = hr !== "--" ? `${hr} BPM` : "--";
     }
   } catch (error) {
     console.error("Heart rate fetch error:", error);
